@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "id": "reacharound",
+  "version": "${version}",
+  "name": "Reacharound",
+  "description": "Reacharound block placement.",
+  "authors": [
+    "spAnser"
+  ],
+  "contact": {
+    "website": "https://spanser.net",
+    "repo": "https://github.com/spAnser/reacharound"
+  },
+  "license": "MIT",
+  "icon": "assets/reacharound/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "client": [],
+    "main": [
+      "com.spanser.reacharound.Reacharound"
+    ],
+    "modmenu": [
+      "com.spanser.reacharound.client.integrations.ReacharoundModMenu"
+    ]
+  },
+  "mixins": [
+    "reacharound.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.14.7",
+    "minecraft": ">=1.19-"
+  },
+  "recommends": {
+    "cloth-config2": "7.x.x",
+    "modmenu": "*"
+  }
+}
