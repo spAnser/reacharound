@@ -90,7 +90,7 @@ public class PlacementFeature {
             blockHitResult = new BlockHitResult(source, direction, currentTarget.pos(), false);
 
             int count = itemStack.getCount();
-            ActionResult result = client.interactionManager.interactBlock(client.player, hand, blockHitResult);
+            ActionResult result = client.interactionManager.interactBlock(client.player, client.world, hand, blockHitResult);
             if (result.isAccepted()) {
                 if (result.shouldSwingHand()) {
                     client.player.swingHand(hand);
