@@ -37,10 +37,14 @@ public class InGameHudMixin {
 
         int color;
         if (PlacementFeature.canPlace(client.player)) {
-            color = 0xffffff | (((int) (255 * scale)) << 24);
+            color = Reacharound.getInstance().config.indicatorColor;
         } else {
-            color = 0xff5555 | (((int) (255 * scale)) << 24);
+            color = Reacharound.getInstance().config.indicatorColorObstructed;
         }
+
+        int alpha = (int) ((color >>> 24) * scale);
+
+        color = (alpha << 24) | (color & 0x00ffffff);
 
         switch (Reacharound.getInstance().config.indicatorStyle) {
             case 1 -> renderStyleQuark(matrices, color);
