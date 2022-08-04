@@ -5,5 +5,7 @@
   "reacharound.options.indicator.mode": "Mode",
   "reacharound.options.indicator.style": "Style",
   "reacharound.options.indicator.vertical": "Vertical Indicator",
-  "reacharound.options.indicator.horizontal": "Horizontal Indicator"
+  "reacharound.options.indicator.horizontal": "Horizontal Indicator",
+  "reacharound.options.indicator.color": "Color",
+  "reacharound.options.indicator.colorObstructed": "Color (Obstructed)"
 }

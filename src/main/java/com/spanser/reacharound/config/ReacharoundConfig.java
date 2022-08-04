@@ -8,4 +8,7 @@ public class ReacharoundConfig {
 
     public String indicatorVertical = "|   |";
     public String indicatorHorizontal = "{   }";
+
+    public int indicatorColor = 0xffffffff;
+    public int indicatorColorObstructed = 0xffff5555;
 }

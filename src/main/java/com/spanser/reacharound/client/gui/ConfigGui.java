@@ -30,6 +30,8 @@ public class ConfigGui {
         }).setSaveConsumer((newValue) -> config.indicatorStyle = newValue).build());
         general.addEntry(entryBuilder.startStrField(Text.translatable("reacharound.options.indicator.vertical"), config.indicatorVertical).setDefaultValue("|   |").setSaveConsumer((newValue) -> config.indicatorVertical = newValue).build());
         general.addEntry(entryBuilder.startStrField(Text.translatable("reacharound.options.indicator.horizontal"), config.indicatorHorizontal).setDefaultValue("{   }").setSaveConsumer((newValue) -> config.indicatorHorizontal = newValue).build());
+        general.addEntry(entryBuilder.startAlphaColorField(Text.translatable("reacharound.options.indicator.color"), config.indicatorColor).setDefaultValue(0xffffffff).setSaveConsumer((newValue) -> config.indicatorColor = newValue).build());
+        general.addEntry(entryBuilder.startAlphaColorField(Text.translatable("reacharound.options.indicator.colorObstructed"), config.indicatorColorObstructed).setDefaultValue(0xffff5555).setSaveConsumer((newValue) -> config.indicatorColorObstructed = newValue).build());
 
         return builder.setTransparentBackground(isTransparent).build();
     }
