@@ -18,6 +18,11 @@ public class ConfigGui {
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
         general.addEntry(entryBuilder.startBooleanToggle(Text.translatable("reacharound.options.indicator.enabled"), config.enabled).setDefaultValue(true).setSaveConsumer(newValue -> config.enabled = newValue).build());
+        general.addEntry(entryBuilder.startSelector(Text.translatable("reacharound.options.indicator.mode"), new Byte[]{0, 1, 2}, config.mode).setDefaultValue((byte) 0).setNameProvider((value) -> switch (value) {
+            case 1 -> Text.literal("Horizontal");
+            case 2 -> Text.literal("Vertical");
+            default -> Text.translatable("Both");
+        }).setSaveConsumer((newValue) -> config.mode = newValue).build());
         general.addEntry(entryBuilder.startSelector(Text.translatable("reacharound.options.indicator.style"), new Byte[]{0, 1, 2}, config.indicatorStyle).setDefaultValue((byte) 0).setNameProvider((value) -> switch (value) {
             case 1 -> Text.literal("Quark");
             case 2 -> Text.literal("Custom");
