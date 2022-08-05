@@ -11,4 +11,9 @@ public class ReacharoundConfig {
 
     public int indicatorColor = 0xffffffff;
     public int indicatorColorObstructed = 0xffff5555;
+
+    public int indicatorAnimationDuration = 5;
+    public byte indicatorAnimationInterpolation = 2;
+    public byte indicatorAnimationFadeInterpolation = 2;
+
 }

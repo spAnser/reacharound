@@ -7,5 +7,8 @@
   "reacharound.options.indicator.vertical": "Vertical Indicator",
   "reacharound.options.indicator.horizontal": "Horizontal Indicator",
   "reacharound.options.indicator.color": "Color",
-  "reacharound.options.indicator.colorObstructed": "Color (Obstructed)"
+  "reacharound.options.indicator.colorObstructed": "Color (Obstructed)",
+  "reacharound.options.animation.duration": "Duration",
+  "reacharound.options.animation.interpolation": "Interpolation",
+  "reacharound.options.animation.fadeInterpolation": "Fade Interpolation"
 }
