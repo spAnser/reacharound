@@ -31,16 +31,40 @@ public class InGameHudMixin {
         matrices.push();
         matrices.translate(scaledWidth / 2F, scaledHeight / 2f - 4, 0);
 
-        float scale = Math.min(5, PlacementFeature.ticksDisplayed + tickDelta) / 5F;
-        scale *= scale;
+        int duration = Reacharound.getInstance().config.indicatorAnimationDuration;
+        float scale;
+        if (Reacharound.getInstance().config.indicatorAnimationDuration > 0) {
+            scale = Math.min(duration, PlacementFeature.ticksDisplayed + tickDelta) / ((float) (duration));
+        } else {
+            scale = 1;
+        }
+
+        float fade;
+        switch (Reacharound.getInstance().config.indicatorAnimationFadeInterpolation) {
+            case 1 -> fade = scale; // linear
+            case 2 -> fade = scale * scale; // quadratic
+            case 3 -> fade = scale * scale * scale; // cubic
+            default -> fade = 1; // none
+        }
+
+        switch (Reacharound.getInstance().config.indicatorAnimationInterpolation) {
+            case 1 -> scale *= 1; // linear
+            case 2 -> scale *= scale; // quadratic
+            case 3 -> scale *= scale * scale; // cubic
+            default -> scale = 1; // none
+        }
         matrices.scale(scale, 1f, 1f);
 
         int color;
         if (PlacementFeature.canPlace(client.player)) {
-            color = 0xffffff | (((int) (255 * scale)) << 24);
+            color = Reacharound.getInstance().config.indicatorColor;
         } else {
-            color = 0xff5555 | (((int) (255 * scale)) << 24);
+            color = Reacharound.getInstance().config.indicatorColorObstructed;
         }
+
+        int alpha = (int) ((color >>> 24) * fade);
+
+        color = (alpha << 24) | (color & 0x00ffffff);
 
         switch (Reacharound.getInstance().config.indicatorStyle) {
             case 1 -> renderStyleQuark(matrices, color);

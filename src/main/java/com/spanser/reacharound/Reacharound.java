@@ -1,6 +1,7 @@
 package com.spanser.reacharound;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.spanser.reacharound.config.ReacharoundConfig;
 import net.fabricmc.api.ModInitializer;
 import org.apache.logging.log4j.LogManager;
@@ -46,7 +47,7 @@ public class Reacharound implements ModInitializer {
     }
 
     public void saveConfig() {
-        Gson gson = new Gson();
+        Gson gson = new GsonBuilder().setPrettyPrinting().create();
         File file = new File("./config/reacharound.json");
         if (!file.getParentFile().exists()) {
             file.getParentFile().mkdir();
