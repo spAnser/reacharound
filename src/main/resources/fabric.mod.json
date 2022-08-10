@@ -8,8 +8,9 @@
     "spAnser"
   ],
   "contact": {
-    "website": "https://spanser.net",
-    "repo": "https://github.com/spAnser/reacharound"
+    "homepage": "https://github.com/spAnser/reacharound",
+    "issues": "https://github.com/spAnser/reacharound/issues",
+    "sources": "https://github.com/spAnser/reacharound"
   },
   "license": "MIT",
   "icon": "assets/reacharound/icon.png",

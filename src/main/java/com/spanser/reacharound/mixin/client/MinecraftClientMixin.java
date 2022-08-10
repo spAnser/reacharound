@@ -2,6 +2,7 @@ package com.spanser.reacharound.mixin.client;
 
 import com.spanser.reacharound.Reacharound;
 import com.spanser.reacharound.client.feature.PlacementFeature;
+import com.spanser.reacharound.config.ReacharoundConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.item.ItemStack;
@@ -28,7 +29,8 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
 
     @Inject(at = @At("TAIL"), method = "tick()V")
     public void onTick(CallbackInfo ci) {
-        if (!Reacharound.getInstance().config.enabled) {
+        ReacharoundConfig config = Reacharound.getInstance().config;
+        if (!config.enabled) {
             return;
         }
 
@@ -38,7 +40,7 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
             PlacementFeature.checkPlayerReacharoundTarget(player);
 
         if (PlacementFeature.currentTarget != null) {
-            if (PlacementFeature.ticksDisplayed < 5) {
+            if (PlacementFeature.ticksDisplayed < config.indicatorAnimationDuration) {
                 PlacementFeature.ticksDisplayed++;
             }
         } else {

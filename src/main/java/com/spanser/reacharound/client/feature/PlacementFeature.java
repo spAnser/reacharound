@@ -1,5 +1,6 @@
 package com.spanser.reacharound.client.feature;
 
+import com.spanser.reacharound.Reacharound;
 import com.spanser.reacharound.client.handler.RayTraceHandler;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -119,19 +120,24 @@ public class PlacementFeature {
 
         Pair<Vec3d, Vec3d> params = RayTraceHandler.getEntityParams(player);
         double range = MinecraftClient.getInstance().interactionManager.getReachDistance();
-        Vec3d rayPos = params.getLeft();
+        Vec3d rayPos = params.getLeft().add(params.getRight().multiply(0.5f));
         Vec3d ray = params.getRight().multiply(range);
 
         HitResult normalRes = RayTraceHandler.rayTrace(player, world, rayPos, ray, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE);
 
         if (normalRes.getType() == HitResult.Type.MISS) {
-            ReacharoundTarget target = getPlayerVerticalReacharoundTarget(player, hand, world, rayPos, ray);
-            if (target != null) {
-                currentTarget = target;
-                return;
+            switch (Reacharound.getInstance().config.mode) {
+                case 1 -> currentTarget = getPlayerHorizontalReacharoundTarget(player, hand, world, rayPos, ray);
+                case 2 -> currentTarget = getPlayerVerticalReacharoundTarget(player, hand, world, rayPos, ray);
+                default -> {
+                    ReacharoundTarget target = getPlayerVerticalReacharoundTarget(player, hand, world, rayPos, ray);
+                    if (target != null) {
+                        currentTarget = target;
+                        break;
+                    }
+                    currentTarget = getPlayerHorizontalReacharoundTarget(player, hand, world, rayPos, ray);
+                }
             }
-
-            currentTarget = getPlayerHorizontalReacharoundTarget(player, hand, world, rayPos, ray);
         }
     }
 
