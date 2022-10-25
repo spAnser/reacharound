@@ -48,21 +48,17 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
         }
     }
 
-    @Redirect(method = "doItemUse", at = @At(value = "INVOKE", target = "Lnet/minecraft/util/Hand;values()[Lnet/minecraft/util/Hand;"))
-    private Hand[] onItemUse() {
-        Hand[] handValues = Hand.values();
+    @Redirect(method = "doItemUse", at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/network/ClientPlayerEntity;getStackInHand(Lnet/minecraft/util/Hand;)Lnet/minecraft/item/ItemStack;"
+    ))
+    private ItemStack onItemUse(ClientPlayerEntity player, Hand hand) {
+        ItemStack itemStack = player.getStackInHand(hand);
 
-        if (!Reacharound.getInstance().config.enabled) {
-            return handValues;
+        if (Reacharound.getInstance().config.enabled) {
+            PlacementFeature.executeReacharound(instance, hand, itemStack);
         }
 
-        for (Hand hand : handValues) {
-            ItemStack itemStack = player.getStackInHand(hand);
-
-            if (PlacementFeature.executeReacharound(instance, hand, itemStack)) {
-                break;
-            }
-        }
-        return handValues;
+        return itemStack;
     }
 }
