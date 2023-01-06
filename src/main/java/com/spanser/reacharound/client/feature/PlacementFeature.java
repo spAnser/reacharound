@@ -19,7 +19,7 @@ import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.math.Direction;
 import net.minecraft.util.math.Vec3d;
-import net.minecraft.util.math.Vec3f;
+import net.minecraft.util.math.Vec3i;
 import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
@@ -51,7 +51,7 @@ public class PlacementFeature {
                 currentTarget = new ReacharoundTarget(currentTarget.pos().add(0, -1, 0), currentTarget.dir(), currentTarget.hand());
             }
         } else {
-            Vec3f facing = player.getHorizontalFacing().getUnitVector();
+            Vec3i facing = player.getHorizontalFacing().getVector();
             block = player.world.getBlockState(currentTarget.pos().add(-facing.getX(), 0, -facing.getZ()));
         }
 
@@ -84,8 +84,8 @@ public class PlacementFeature {
             if (isVertical()) {
                 direction = Direction.fromVector(0, isLookingDown ? -1 : 1, 0);
             } else {
-                Vec3f facing = client.player.getHorizontalFacing().getUnitVector();
-                direction = Direction.fromVector((int) -facing.getX(), 0, (int) -facing.getZ());
+                Vec3i facing = client.player.getHorizontalFacing().getVector();
+                direction = Direction.fromVector(-facing.getX(), 0, -facing.getZ());
             }
 
             blockHitResult = new BlockHitResult(source, direction, currentTarget.pos(), false);
