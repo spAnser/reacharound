@@ -44,7 +44,7 @@ public class PlacementFeature {
         if (isVertical()) {
             boolean isLookingDown = player.getPitch() > 0;
 
-            block = player.world.getBlockState(currentTarget.pos().add(0, isLookingDown ? 1 : -1, 0));
+            block = player.getWorld().getBlockState(currentTarget.pos().add(0, isLookingDown ? 1 : -1, 0));
             if (isLookingDown && blockIsTopSlab(block)) {
                 currentTarget = new ReacharoundTarget(currentTarget.pos().add(0, 1, 0), currentTarget.dir(), currentTarget.hand());
             } else if (!isLookingDown && blockIsBottomSlab(block)) {
@@ -52,7 +52,7 @@ public class PlacementFeature {
             }
         } else {
             Vec3i facing = player.getHorizontalFacing().getVector();
-            block = player.world.getBlockState(currentTarget.pos().add(-facing.getX(), 0, -facing.getZ()));
+            block = player.getWorld().getBlockState(currentTarget.pos().add(-facing.getX(), 0, -facing.getZ()));
         }
 
         return block;
@@ -60,7 +60,7 @@ public class PlacementFeature {
 
     public static boolean canPlace(ClientPlayerEntity player) {
         BlockState block = getPlacement(player);
-        return player.world.canPlace(block, currentTarget.pos(), ShapeContext.absent());
+        return player.getWorld().canPlace(block, currentTarget.pos(), ShapeContext.absent());
     }
 
     public static boolean executeReacharound(MinecraftClient client, Hand hand, ItemStack itemStack) {
@@ -116,7 +116,7 @@ public class PlacementFeature {
         if (hand == null)
             return;
 
-        World world = player.world;
+        World world = player.getWorld();
 
         Pair<Vec3d, Vec3d> params = RayTraceHandler.getEntityParams(player);
         double range = MinecraftClient.getInstance().interactionManager.getReachDistance();
@@ -164,7 +164,7 @@ public class PlacementFeature {
                 distance = -distance;
             }
 
-            if (distance > 1 && (state.isAir() || state.getMaterial().isReplaceable()))
+            if (distance > 1 && (state.isAir() || state.isReplaceable()))
                 return new ReacharoundTarget(pos, isLookingDown ? Direction.DOWN : Direction.UP, hand);
         }
 
@@ -180,7 +180,7 @@ public class PlacementFeature {
             BlockPos pos = ((BlockHitResult) take2Res).getBlockPos().offset(dir);
             BlockState state = world.getBlockState(pos);
 
-            if ((state.isAir() || state.getMaterial().isReplaceable()))
+            if ((state.isAir() || state.isReplaceable()))
                 return new ReacharoundTarget(pos, dir.getOpposite(), hand);
         }
 

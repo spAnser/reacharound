@@ -28,8 +28,8 @@
     "reacharound.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.14.7",
-    "minecraft": ">=1.19-"
+    "fabricloader": ">=0.14.21",
+    "minecraft": ">=1.20-"
   },
   "recommends": {
     "cloth-config2": "*",
