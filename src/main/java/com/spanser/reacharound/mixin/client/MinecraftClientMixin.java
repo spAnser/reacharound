@@ -23,6 +23,8 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
     @Shadow
     static MinecraftClient instance;
 
+    private boolean CancelNextUse;
+
     public MinecraftClientMixin(String string) {
         super(string);
     }
@@ -57,9 +59,21 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
         ReacharoundConfig config = Reacharound.getInstance().config;
 
         if (config.enabled && (hand != Hand.OFF_HAND || (hand == Hand.OFF_HAND && config.offhand))) {
-            PlacementFeature.executeReacharound(instance, hand, itemStack);
+            CancelNextUse = PlacementFeature.executeReacharound(instance, hand, itemStack);
         }
 
         return itemStack;
+    }
+
+    @Inject(method = "doItemUse", at = @At(
+            value = "INVOKE",
+            target = "Lnet/minecraft/client/network/ClientPlayerEntity;getStackInHand(Lnet/minecraft/util/Hand;)Lnet/minecraft/item/ItemStack;",
+            shift = At.Shift.AFTER
+    ), cancellable = true)
+    private void onItemUseCanceler(CallbackInfo ci) {
+        if (CancelNextUse) {
+            CancelNextUse = false;
+            ci.cancel();
+        }
     }
 }
