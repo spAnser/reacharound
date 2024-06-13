@@ -16,10 +16,10 @@
   "icon": "assets/reacharound/icon.png",
   "environment": "*",
   "entrypoints": {
-    "client": [],
-    "main": [
+    "client": [
       "com.spanser.reacharound.Reacharound"
     ],
+    "main": [],
     "modmenu": [
       "com.spanser.reacharound.client.integrations.ReacharoundModMenu"
     ]
