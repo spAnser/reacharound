@@ -8,7 +8,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 
 public class Hud {
-    private MinecraftClient client;
+    private final MinecraftClient client;
     private ReacharoundConfig config;
 
     public Hud(MinecraftClient client, ReacharoundConfig config) {
@@ -24,7 +24,11 @@ public class Hud {
         }
 
         context.getMatrices().push();
-        context.getMatrices().translate(context.getScaledWindowWidth() / 2F, context.getScaledWindowHeight() / 2f - 4, 0);
+        context.getMatrices().translate(
+                context.getScaledWindowWidth() / 2f + config.indicatorOffsetX,
+                context.getScaledWindowHeight() / 2f - 4 + config.indicatorOffsetY,
+                0
+        );
 
         int duration = config.indicatorAnimationDuration;
         float scale;
