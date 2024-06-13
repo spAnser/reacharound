@@ -1,45 +1,34 @@
-package com.spanser.reacharound.mixin.client;
+package com.spanser.reacharound.client.gui;
 
 import com.spanser.reacharound.Reacharound;
 import com.spanser.reacharound.client.feature.PlacementFeature;
 import com.spanser.reacharound.config.ReacharoundConfig;
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.hud.InGameHud;
 import net.minecraft.client.util.math.MatrixStack;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(InGameHud.class)
-public class InGameHudMixin {
-    @Shadow
-    @Final
-    private MinecraftClient client;
-    @Shadow
-    private int scaledHeight;
-    @Shadow
-    private int scaledWidth;
+public class Hud {
+    private final MinecraftClient client;
+    private final Reacharound reacharound;
 
-    private ReacharoundConfig config;
+    public Hud(MinecraftClient client, Reacharound reacharound) {
+        this.client = client;
+        this.reacharound = reacharound;
+    }
 
-    @Inject(method = "render", at = @At(value = "TAIL"))
-    public void renderPlacementAssistText(MatrixStack matrices, float tickDelta, CallbackInfo ci) {
-        config = Reacharound.getInstance().config;
+    public void renderPlacementAssistText(MatrixStack matrices, float deltaTime) {
+        ReacharoundConfig config = reacharound.config;
 
         if (!canReachAround()) {
             return;
         }
 
         matrices.push();
-        matrices.translate(scaledWidth / 2F, scaledHeight / 2f - 4, 0);
+        matrices.translate(client.getWindow().getScaledWidth() / 2F, client.getWindow().getScaledHeight() / 2f - 4, 0);
 
         int duration = config.indicatorAnimationDuration;
         float scale;
         if (config.indicatorAnimationDuration > 0) {
-            scale = Math.min(duration, PlacementFeature.ticksDisplayed + tickDelta) / ((float) (duration));
+            scale = Math.min(duration, PlacementFeature.ticksDisplayed + deltaTime) / ((float) (duration));
         } else {
             scale = 1;
         }
@@ -82,7 +71,7 @@ public class InGameHudMixin {
 
     public void renderStyleDefault(MatrixStack matrices, int color) {
         if (PlacementFeature.isVertical()) {
-            if (client.player.getPitch() < 0) {
+            if ((client.player != null ? client.player.getPitch() : 0) < 0) {
                 matrices.translate(0, -4, 0);
             } else {
                 matrices.translate(0, 4, 0);
@@ -103,7 +92,7 @@ public class InGameHudMixin {
     }
 
     public void renderStyleCustom(MatrixStack matrices, int color) {
-        String text = PlacementFeature.isVertical() ? config.indicatorVertical : config.indicatorHorizontal;
+        String text = PlacementFeature.isVertical() ? reacharound.config.indicatorVertical : reacharound.config.indicatorHorizontal;
         renderText(matrices, color, text);
     }
 
@@ -113,6 +102,6 @@ public class InGameHudMixin {
     }
 
     private boolean canReachAround() {
-        return config.enabled && PlacementFeature.currentTarget != null && client.player != null && client.world != null && client.crosshairTarget != null;
+        return reacharound.config.enabled && PlacementFeature.currentTarget != null && client.player != null && client.world != null && client.crosshairTarget != null;
     }
 }
