@@ -16,10 +16,10 @@
   "icon": "assets/reacharound/icon.png",
   "environment": "*",
   "entrypoints": {
-    "client": [],
-    "main": [
+    "client": [
       "com.spanser.reacharound.Reacharound"
     ],
+    "main": [],
     "modmenu": [
       "com.spanser.reacharound.client.integrations.ReacharoundModMenu"
     ]
@@ -28,8 +28,8 @@
     "reacharound.mixins.json"
   ],
   "depends": {
-    "fabricloader": ">=0.14.21",
-    "minecraft": ">=1.20-"
+    "fabricloader": ">=0.15.11",
+    "minecraft": ">=1.21-"
   },
   "recommends": {
     "cloth-config2": "*",

@@ -1,37 +1,22 @@
-package com.spanser.reacharound.mixin.client;
+package com.spanser.reacharound.client.gui;
 
 import com.spanser.reacharound.Reacharound;
 import com.spanser.reacharound.client.feature.PlacementFeature;
 import com.spanser.reacharound.config.ReacharoundConfig;
+
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.font.TextRenderer;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.client.gui.hud.InGameHud;
-import net.minecraft.client.render.VertexConsumer;
-import net.minecraft.client.render.VertexConsumerProvider;
-import net.minecraft.client.util.math.MatrixStack;
-import org.joml.Matrix4f;
-import org.spongepowered.asm.mixin.Final;
-import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
-import org.spongepowered.asm.mixin.injection.At;
-import org.spongepowered.asm.mixin.injection.Inject;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-@Mixin(InGameHud.class)
-public class InGameHudMixin {
-    @Shadow
-    @Final
+public class Hud {
     private MinecraftClient client;
-    @Shadow
-    private int scaledHeight;
-    @Shadow
-    private int scaledWidth;
-
     private ReacharoundConfig config;
 
-    @Inject(method = "render", at = @At(value = "TAIL"))
-    public void renderPlacementAssistText(DrawContext context, float tickDelta, CallbackInfo ci) {
+    public Hud(MinecraftClient client, ReacharoundConfig config) {
+        this.client = client;
+        this.config = config;
+    }
+
+    public void renderPlacementAssistText(DrawContext context, float tickDelta) {
         config = Reacharound.getInstance().config;
 
         if (!canReachAround()) {
@@ -39,7 +24,7 @@ public class InGameHudMixin {
         }
 
         context.getMatrices().push();
-        context.getMatrices().translate(scaledWidth / 2F, scaledHeight / 2f - 4, 0);
+        context.getMatrices().translate(context.getScaledWindowWidth() / 2F, context.getScaledWindowHeight() / 2f - 4, 0);
 
         int duration = config.indicatorAnimationDuration;
         float scale;

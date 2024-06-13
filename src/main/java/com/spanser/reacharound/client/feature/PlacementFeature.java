@@ -119,7 +119,7 @@ public class PlacementFeature {
         World world = player.getWorld();
 
         Pair<Vec3d, Vec3d> params = RayTraceHandler.getEntityParams(player);
-        double range = MinecraftClient.getInstance().interactionManager.getReachDistance();
+        double range = player.getBlockInteractionRange();
         Vec3d rayPos = params.getLeft().add(params.getRight().multiply(0.5f));
         Vec3d ray = params.getRight().multiply(range);
 

@@ -1,18 +1,23 @@
 package com.spanser.reacharound;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-import com.spanser.reacharound.config.ReacharoundConfig;
-import net.fabricmc.api.ModInitializer;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class Reacharound implements ModInitializer {
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.spanser.reacharound.client.gui.Hud;
+import com.spanser.reacharound.config.ReacharoundConfig;
+
+import net.fabricmc.api.ClientModInitializer;
+import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.minecraft.client.MinecraftClient;
+
+public class Reacharound implements ClientModInitializer {
     public static final Logger LOGGER = LogManager.getLogger();
     private static Reacharound instance;
     public ReacharoundConfig config;
@@ -22,10 +27,20 @@ public class Reacharound implements ModInitializer {
     }
 
     @Override
-    public void onInitialize() {
+    public void onInitializeClient() {
         LOGGER.info("Reacharound Initializing.");
         loadConfig();
         instance = this;
+
+        MinecraftClient client = MinecraftClient.getInstance();
+        Hud hud = new Hud(client, this.config);
+
+        HudRenderCallback.EVENT.register((guiGraphics, tickCounter) -> {
+            if (client.currentScreen == null) {
+                hud.renderPlacementAssistText(guiGraphics, tickCounter.getTickDelta(false));
+            }
+        });
+
         LOGGER.info("Reacharound Initialized.");
     }
 
@@ -61,4 +76,3 @@ public class Reacharound implements ModInitializer {
         }
     }
 }
-
