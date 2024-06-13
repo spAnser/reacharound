@@ -1,6 +1,5 @@
 package com.spanser.reacharound.client.gui;
 
-import com.spanser.reacharound.Reacharound;
 import com.spanser.reacharound.client.feature.PlacementFeature;
 import com.spanser.reacharound.config.ReacharoundConfig;
 import net.minecraft.client.MinecraftClient;
@@ -9,24 +8,22 @@ import net.minecraft.util.Hand;
 
 public class Hud {
     private final MinecraftClient client;
-    private final Reacharound reacharound;
+    private final ReacharoundConfig config;
 
-    public Hud(MinecraftClient client, Reacharound reacharound) {
+    public Hud(MinecraftClient client, ReacharoundConfig config) {
         this.client = client;
-        this.reacharound = reacharound;
+        this.config = config;
     }
 
     public void renderPlacementAssistText(MatrixStack matrices, float deltaTime) {
-        ReacharoundConfig config = reacharound.config;
-
         if (!canReachAround()) {
             return;
         }
 
         matrices.push();
         matrices.translate(
-                client.getWindow().getScaledWidth() / 2F + reacharound.config.indicatorOffsetX,
-                client.getWindow().getScaledHeight() / 2f - 4 + reacharound.config.indicatorOffsetY,
+                client.getWindow().getScaledWidth() / 2F + config.indicatorOffsetX,
+                client.getWindow().getScaledHeight() / 2f - 4 + config.indicatorOffsetY,
                 0
         );
 
@@ -97,7 +94,7 @@ public class Hud {
     }
 
     public void renderStyleCustom(MatrixStack matrices, int color) {
-        String text = PlacementFeature.isVertical() ? reacharound.config.indicatorVertical : reacharound.config.indicatorHorizontal;
+        String text = PlacementFeature.isVertical() ? config.indicatorVertical : config.indicatorHorizontal;
         renderText(matrices, color, text);
     }
 
@@ -107,9 +104,9 @@ public class Hud {
     }
 
     private boolean canReachAround() {
-        return reacharound.config.enabled &&
+        return config.enabled &&
                 PlacementFeature.currentTarget != null &&
-                (PlacementFeature.currentTarget.hand() != Hand.OFF_HAND || (PlacementFeature.currentTarget.hand() == Hand.OFF_HAND && reacharound.config.offhand)) &&
+                (PlacementFeature.currentTarget.hand() != Hand.OFF_HAND || (PlacementFeature.currentTarget.hand() == Hand.OFF_HAND && config.offhand)) &&
                 client.player != null &&
                 client.world != null &&
                 client.crosshairTarget != null;

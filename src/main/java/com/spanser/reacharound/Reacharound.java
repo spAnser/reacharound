@@ -32,7 +32,7 @@ public class Reacharound implements ClientModInitializer {
         loadConfig();
         instance = this;
         MinecraftClient client = MinecraftClient.getInstance();
-        Hud hud = new Hud(client, this);
+        Hud hud = new Hud(client, config);
 
         HudRenderCallback.EVENT.register((matrices, deltaTime) -> {
             if (client.currentScreen == null) {
