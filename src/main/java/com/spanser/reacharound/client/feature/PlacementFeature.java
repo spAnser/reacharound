@@ -192,7 +192,12 @@ public class PlacementFeature {
         return item instanceof BlockItem;
     }
 
-    private record ReacharoundTarget(BlockPos pos, Direction dir, Hand hand) {
+    public record ReacharoundTarget(BlockPos pos, Direction dir, Hand hand) {
+        public ReacharoundTarget(BlockPos pos, Direction dir, Hand hand) {
+            this.pos = pos;
+            this.dir = dir;
+            this.hand = hand;
+        }
     }
 
     public static boolean isVertical() {
