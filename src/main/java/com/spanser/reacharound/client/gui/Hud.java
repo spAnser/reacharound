@@ -23,7 +23,11 @@ public class Hud {
         }
 
         matrices.push();
-        matrices.translate(client.getWindow().getScaledWidth() / 2F, client.getWindow().getScaledHeight() / 2f - 4, 0);
+        matrices.translate(
+                client.getWindow().getScaledWidth() / 2F + reacharound.config.indicatorOffsetX,
+                client.getWindow().getScaledHeight() / 2f - 4 + reacharound.config.indicatorOffsetY,
+                0
+        );
 
         int duration = config.indicatorAnimationDuration;
         float scale;

@@ -6,6 +6,7 @@ import me.shedaniel.clothconfig2.api.ConfigBuilder;
 import me.shedaniel.clothconfig2.api.ConfigCategory;
 import me.shedaniel.clothconfig2.api.ConfigEntryBuilder;
 import net.minecraft.client.gui.screen.Screen;
+import net.minecraft.text.Text;
 import net.minecraft.text.TranslatableText;
 
 public class ConfigGui {
@@ -34,6 +35,8 @@ public class ConfigGui {
         indicator.addEntry(entryBuilder.startStrField(new TranslatableText("reacharound.config.indicator.horizontal"), config.indicatorHorizontal).setDefaultValue("{   }").setSaveConsumer((newValue) -> config.indicatorHorizontal = newValue).build());
         indicator.addEntry(entryBuilder.startAlphaColorField(new TranslatableText("reacharound.config.indicator.color"), config.indicatorColor).setDefaultValue(0xffffffff).setSaveConsumer((newValue) -> config.indicatorColor = newValue).build());
         indicator.addEntry(entryBuilder.startAlphaColorField(new TranslatableText("reacharound.config.indicator.colorObstructed"), config.indicatorColorObstructed).setDefaultValue(0xffff5555).setSaveConsumer((newValue) -> config.indicatorColorObstructed = newValue).build());
+        indicator.addEntry(entryBuilder.startFloatField(new TranslatableText("reacharound.config.indicator.offsetx"), config.indicatorOffsetX).setDefaultValue(0f).setSaveConsumer((newValue) -> config.indicatorOffsetX = newValue).build());
+        indicator.addEntry(entryBuilder.startFloatField(new TranslatableText("reacharound.config.indicator.offsety"), config.indicatorOffsetY).setDefaultValue(0f).setSaveConsumer((newValue) -> config.indicatorOffsetY = newValue).build());
 
         animation.addEntry(entryBuilder.startIntField(new TranslatableText("reacharound.config.animation.duration"), config.indicatorAnimationDuration).setDefaultValue(5).setSaveConsumer((newValue) -> config.indicatorAnimationDuration = newValue).build());
         animation.addEntry(entryBuilder.startSelector(new TranslatableText("reacharound.config.animation.interpolation"), new Byte[]{0, 1, 2, 3}, config.indicatorAnimationInterpolation).setDefaultValue((byte) 2).setNameProvider((value) -> switch (value) {
