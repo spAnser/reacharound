@@ -34,6 +34,8 @@ public class ConfigGui {
         indicator.addEntry(entryBuilder.startStrField(Text.translatable("reacharound.config.indicator.horizontal"), config.indicatorHorizontal).setDefaultValue("{   }").setSaveConsumer((newValue) -> config.indicatorHorizontal = newValue).build());
         indicator.addEntry(entryBuilder.startAlphaColorField(Text.translatable("reacharound.config.indicator.color"), config.indicatorColor).setDefaultValue(0xffffffff).setSaveConsumer((newValue) -> config.indicatorColor = newValue).build());
         indicator.addEntry(entryBuilder.startAlphaColorField(Text.translatable("reacharound.config.indicator.colorObstructed"), config.indicatorColorObstructed).setDefaultValue(0xffff5555).setSaveConsumer((newValue) -> config.indicatorColorObstructed = newValue).build());
+        indicator.addEntry(entryBuilder.startFloatField(Text.translatable("reacharound.config.indicator.offsetx"), config.indicatorOffsetX).setDefaultValue(0f).setSaveConsumer((newValue) -> config.indicatorOffsetX = newValue).build());
+        indicator.addEntry(entryBuilder.startFloatField(Text.translatable("reacharound.config.indicator.offsety"), config.indicatorOffsetY).setDefaultValue(0f).setSaveConsumer((newValue) -> config.indicatorOffsetY = newValue).build());
 
         animation.addEntry(entryBuilder.startIntField(Text.translatable("reacharound.config.animation.duration"), config.indicatorAnimationDuration).setDefaultValue(5).setSaveConsumer((newValue) -> config.indicatorAnimationDuration = newValue).build());
         animation.addEntry(entryBuilder.startSelector(Text.translatable("reacharound.config.animation.interpolation"), new Byte[]{0, 1, 2, 3}, config.indicatorAnimationInterpolation).setDefaultValue((byte) 2).setNameProvider((value) -> switch (value) {

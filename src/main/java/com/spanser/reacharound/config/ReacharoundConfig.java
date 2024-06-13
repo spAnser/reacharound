@@ -17,4 +17,6 @@ public class ReacharoundConfig {
     public byte indicatorAnimationInterpolation = 2;
     public byte indicatorAnimationFadeInterpolation = 2;
 
+    public float indicatorOffsetX = 0f;
+    public float indicatorOffsetY = 0f;
 }
