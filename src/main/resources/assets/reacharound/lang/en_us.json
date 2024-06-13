@@ -2,6 +2,7 @@
   "reacharound.config": "Reacharound Config",
   "reacharound.config.indicator": "Indicator",
   "reacharound.config.indicator.enabled": "Enabled",
+  "reacharound.config.indicator.offhand": "Allow placing with Offhand",
   "reacharound.config.indicator.mode": "Mode",
   "reacharound.config.indicator.mode.horizontal": "Horizontal",
   "reacharound.config.indicator.mode.vertical": "Vertical",
