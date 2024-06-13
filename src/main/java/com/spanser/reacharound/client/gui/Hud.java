@@ -7,24 +7,25 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
 
 public class Hud {
-    private MinecraftClient client;
-    private Reacharound reacharound;
+    private final MinecraftClient client;
+    private ReacharoundConfig config;
 
-    public Hud(MinecraftClient client, Reacharound reacharound) {
+    public Hud(MinecraftClient client, ReacharoundConfig config) {
         this.client = client;
-        this.reacharound = reacharound;
+        this.config = config;
     }
 
     public void renderPlacementAssistText(DrawContext context, float deltaTime) {
-        ReacharoundConfig config = reacharound.config;
-
         if (!canReachAround()) {
             return;
         }
 
         context.getMatrices().push();
-        context.getMatrices().translate(context.getScaledWindowWidth() / 2F, context.getScaledWindowHeight() / 2f - 4,
-                0);
+        context.getMatrices().translate(
+                context.getScaledWindowWidth() / 2f + config.indicatorOffsetX,
+                context.getScaledWindowHeight() / 2f - 4 + config.indicatorOffsetY,
+                0
+        );
 
         int duration = config.indicatorAnimationDuration;
         float scale;
@@ -94,8 +95,7 @@ public class Hud {
     }
 
     public void renderStyleCustom(DrawContext context, int color) {
-        String text = PlacementFeature.isVertical() ? reacharound.config.indicatorVertical
-                : reacharound.config.indicatorHorizontal;
+        String text = PlacementFeature.isVertical() ? config.indicatorVertical : config.indicatorHorizontal;
         renderText(context, color, text);
     }
 
@@ -105,8 +105,6 @@ public class Hud {
     }
 
     private boolean canReachAround() {
-        return reacharound.config.enabled && PlacementFeature.currentTarget != null && client.player != null
-                && client.world != null
-                && client.crosshairTarget != null;
+        return config.enabled && PlacementFeature.currentTarget != null && client.player != null && client.world != null && client.crosshairTarget != null;
     }
 }
