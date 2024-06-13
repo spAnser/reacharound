@@ -19,6 +19,7 @@ public class ConfigGui {
         ConfigEntryBuilder entryBuilder = builder.entryBuilder();
 
         indicator.addEntry(entryBuilder.startBooleanToggle(Text.translatable("reacharound.config.indicator.enabled"), config.enabled).setDefaultValue(true).setSaveConsumer(newValue -> config.enabled = newValue).build());
+        indicator.addEntry(entryBuilder.startBooleanToggle(Text.translatable("reacharound.config.indicator.offhand"), config.offhand).setDefaultValue(true).setSaveConsumer(newValue -> config.offhand = newValue).build());
         indicator.addEntry(entryBuilder.startSelector(Text.translatable("reacharound.config.indicator.mode"), new Byte[]{0, 1, 2}, config.mode).setDefaultValue((byte) 0).setNameProvider((value) -> switch (value) {
             case 1 -> Text.translatable("reacharound.config.indicator.mode.horizontal");
             case 2 -> Text.translatable("reacharound.config.indicator.mode.vertical");
