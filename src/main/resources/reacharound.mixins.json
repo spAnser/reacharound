@@ -3,10 +3,8 @@
   "minVersion": "0.8",
   "package": "com.spanser.reacharound.mixin",
   "compatibilityLevel": "JAVA_17",
-  "mixins": [
-  ],
+  "mixins": [],
   "client": [
-    "client.InGameHudMixin",
     "client.MinecraftClientMixin"
   ],
   "injectors": {
