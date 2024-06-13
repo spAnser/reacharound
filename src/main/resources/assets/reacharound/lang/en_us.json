@@ -15,6 +15,8 @@
   "reacharound.config.indicator.horizontal": "Custom Horizontal Indicator",
   "reacharound.config.indicator.color": "Color",
   "reacharound.config.indicator.colorObstructed": "Color (Obstructed)",
+  "reacharound.config.indicator.offsetx": "Offset X",
+  "reacharound.config.indicator.offsety": "Offset Y",
   "reacharound.config.animation": "Animation",
   "reacharound.config.animation.duration": "Duration",
   "reacharound.config.animation.interpolation": "Move Interpolation",

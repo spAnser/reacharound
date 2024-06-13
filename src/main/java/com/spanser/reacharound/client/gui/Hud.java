@@ -25,8 +25,8 @@ public class Hud {
 
         context.getMatrices().push();
         context.getMatrices().translate(
-                context.getScaledWindowWidth() / 2f,
-                context.getScaledWindowHeight() / 2f - 4,
+                context.getScaledWindowWidth() / 2f + config.indicatorOffsetX,
+                context.getScaledWindowHeight() / 2f - 4 + config.indicatorOffsetY,
                 0
         );
 
