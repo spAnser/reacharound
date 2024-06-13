@@ -76,7 +76,7 @@ public class Hud {
 
     public void renderStyleDefault(DrawContext context, int color) {
         if (PlacementFeature.isVertical()) {
-            if (client.player.getPitch() < 0) {
+            if ((client.player != null ? client.player.getPitch() : 0) < 0) {
                 context.getMatrices().translate(0, -4, 0);
             } else {
                 context.getMatrices().translate(0, 4, 0);
