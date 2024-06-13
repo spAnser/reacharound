@@ -5,6 +5,7 @@ import com.spanser.reacharound.client.feature.PlacementFeature;
 import com.spanser.reacharound.config.ReacharoundConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import net.minecraft.util.Hand;
 
 public class Hud {
     private final MinecraftClient client;
@@ -105,6 +106,11 @@ public class Hud {
     }
 
     private boolean canReachAround() {
-        return config.enabled && PlacementFeature.currentTarget != null && client.player != null && client.world != null && client.crosshairTarget != null;
+        return config.enabled &&
+                PlacementFeature.currentTarget != null &&
+                (PlacementFeature.currentTarget.hand() != Hand.OFF_HAND || (PlacementFeature.currentTarget.hand() == Hand.OFF_HAND && config.offhand)) &&
+                client.player != null &&
+                client.world != null &&
+                client.crosshairTarget != null;
     }
 }
