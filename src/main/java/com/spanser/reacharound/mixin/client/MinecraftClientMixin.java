@@ -54,8 +54,9 @@ public abstract class MinecraftClientMixin extends ReentrantThreadExecutor<Runna
     ))
     private ItemStack onItemUse(ClientPlayerEntity player, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
+        ReacharoundConfig config = Reacharound.getInstance().config;
 
-        if (Reacharound.getInstance().config.enabled) {
+        if (config.enabled && (hand != Hand.OFF_HAND || (hand == Hand.OFF_HAND && config.offhand))) {
             PlacementFeature.executeReacharound(instance, hand, itemStack);
         }
 
