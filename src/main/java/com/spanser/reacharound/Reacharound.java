@@ -51,7 +51,7 @@ public class Reacharound implements ClientModInitializer {
                 config = gson.fromJson(fileReader, ReacharoundConfig.class);
                 fileReader.close();
             } catch (IOException e) {
-                LOGGER.warn("Could not load reacharound config: " + e.getLocalizedMessage());
+                LOGGER.warn("Could not load reacharound config: {}", e.getLocalizedMessage());
             }
         } else {
             config = new ReacharoundConfig();
@@ -70,7 +70,7 @@ public class Reacharound implements ClientModInitializer {
             fileWriter.write(gson.toJson(config));
             fileWriter.close();
         } catch (IOException e) {
-            LOGGER.warn("Could not save reacharound config: " + e.getLocalizedMessage());
+            LOGGER.warn("Could not save reacharound config: {}", e.getLocalizedMessage());
         }
     }
 }
