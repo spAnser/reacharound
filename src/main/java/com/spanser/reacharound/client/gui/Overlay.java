@@ -24,35 +24,35 @@ public class Overlay {
     public static void drawBox(MatrixStack matrices, VertexConsumer vertexConsumer, float x1, float y1, float z1, float x2, float y2, float z2, int color) {
         MatrixStack.Entry entry = matrices.peek();
 
-        vertexConsumer.vertex(entry, x1, y2, z1).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, -1F, 1F, -1F);
-        vertexConsumer.vertex(entry, x1, y2, z2).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, -1F, 1F, 1F);
-        vertexConsumer.vertex(entry, x2, y2, z2).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, 1F, 1F, 1F);
-        vertexConsumer.vertex(entry, x2, y2, z1).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, 1F, 1F, -1F);
+        vertexConsumer.vertex(entry, x1, y2, z1).color(color);
+        vertexConsumer.vertex(entry, x1, y2, z2).color(color);
+        vertexConsumer.vertex(entry, x2, y2, z2).color(color);
+        vertexConsumer.vertex(entry, x2, y2, z1).color(color);
 
-        vertexConsumer.vertex(entry, x1, y2, z1).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, -1F, 1F, -1F);
-        vertexConsumer.vertex(entry, x2, y2, z1).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, 1F, 1F, -1F);
-        vertexConsumer.vertex(entry, x2, y1, z1).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, 1F, -1F, -1F);
-        vertexConsumer.vertex(entry, x1, y1, z1).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, -1F, -1F, -1F);
+        vertexConsumer.vertex(entry, x1, y2, z1).color(color);
+        vertexConsumer.vertex(entry, x2, y2, z1).color(color);
+        vertexConsumer.vertex(entry, x2, y1, z1).color(color);
+        vertexConsumer.vertex(entry, x1, y1, z1).color(color);
 
-        vertexConsumer.vertex(entry, x2, y2, z2).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, 1F, 1F, 1F);
-        vertexConsumer.vertex(entry, x1, y2, z2).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, -1F, 1F, 1F);
-        vertexConsumer.vertex(entry, x1, y1, z2).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, -1F, -1F, 1F);
-        vertexConsumer.vertex(entry, x2, y1, z2).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, 1F, -1F, 1F);
+        vertexConsumer.vertex(entry, x2, y2, z2).color(color);
+        vertexConsumer.vertex(entry, x1, y2, z2).color(color);
+        vertexConsumer.vertex(entry, x1, y1, z2).color(color);
+        vertexConsumer.vertex(entry, x2, y1, z2).color(color);
 
-        vertexConsumer.vertex(entry, x1, y2, z2).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, -1F, 1F, 1F);
-        vertexConsumer.vertex(entry, x1, y2, z1).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, -1F, 1F, -1F);
-        vertexConsumer.vertex(entry, x1, y1, z1).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, -1F, -1F, -1F);
-        vertexConsumer.vertex(entry, x1, y1, z2).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, -1F, -1F, 1F);
+        vertexConsumer.vertex(entry, x1, y2, z2).color(color);
+        vertexConsumer.vertex(entry, x1, y2, z1).color(color);
+        vertexConsumer.vertex(entry, x1, y1, z1).color(color);
+        vertexConsumer.vertex(entry, x1, y1, z2).color(color);
 
-        vertexConsumer.vertex(entry, x2, y1, z2).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, 1F, -1F, 1F);
-        vertexConsumer.vertex(entry, x2, y1, z1).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, 1F, -1F, -1F);
-        vertexConsumer.vertex(entry, x2, y2, z1).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, 1F, 1F, -1F);
-        vertexConsumer.vertex(entry, x2, y2, z2).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, 1F, 1F, 1F);
+        vertexConsumer.vertex(entry, x2, y1, z2).color(color);
+        vertexConsumer.vertex(entry, x2, y1, z1).color(color);
+        vertexConsumer.vertex(entry, x2, y2, z1).color(color);
+        vertexConsumer.vertex(entry, x2, y2, z2).color(color);
 
-        vertexConsumer.vertex(entry, x2, y1, z1).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, 1F, -1F, -1F);
-        vertexConsumer.vertex(entry, x2, y1, z2).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, 1F, -1F, 1F);
-        vertexConsumer.vertex(entry, x1, y1, z2).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, -1F, -1F, 1F);
-        vertexConsumer.vertex(entry, x1, y1, z1).color(color).texture(0, 0).overlay(0, 0).light(0, 0).normal(entry, -1F, -1F, -1F);
+        vertexConsumer.vertex(entry, x2, y1, z1).color(color);
+        vertexConsumer.vertex(entry, x2, y1, z2).color(color);
+        vertexConsumer.vertex(entry, x1, y1, z2).color(color);
+        vertexConsumer.vertex(entry, x1, y1, z1).color(color);
     }
 
     public void render(WorldRenderContext context) {
