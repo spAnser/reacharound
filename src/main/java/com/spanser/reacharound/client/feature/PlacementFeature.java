@@ -2,6 +2,7 @@ package com.spanser.reacharound.client.feature;
 
 import com.spanser.reacharound.Reacharound;
 import com.spanser.reacharound.client.handler.RayTraceHandler;
+import com.spanser.reacharound.config.ReacharoundConfig;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.enums.SlabType;
@@ -126,7 +127,7 @@ public class PlacementFeature {
         HitResult normalRes = RayTraceHandler.rayTrace(player, world, rayPos, ray, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE);
 
         if (normalRes.getType() == HitResult.Type.MISS) {
-            switch (Reacharound.getInstance().config.mode) {
+            switch (Reacharound.getInstance().config.axis) {
                 case 1 -> currentTarget = getPlayerHorizontalReacharoundTarget(player, hand, world, rayPos, ray);
                 case 2 -> currentTarget = getPlayerVerticalReacharoundTarget(player, hand, world, rayPos, ray);
                 default -> {
@@ -192,15 +193,21 @@ public class PlacementFeature {
         return item instanceof BlockItem;
     }
 
-    public record ReacharoundTarget(BlockPos pos, Direction dir, Hand hand) {
-        public ReacharoundTarget(BlockPos pos, Direction dir, Hand hand) {
-            this.pos = pos;
-            this.dir = dir;
-            this.hand = hand;
-        }
-    }
-
     public static boolean isVertical() {
         return PlacementFeature.currentTarget.dir.getAxis() == Direction.Axis.Y;
+    }
+
+    public static boolean canReachAround(MinecraftClient client) {
+        ReacharoundConfig config = Reacharound.getInstance().config;
+
+        return config.enabled &&
+                PlacementFeature.currentTarget != null &&
+                (PlacementFeature.currentTarget.hand() != Hand.OFF_HAND || (PlacementFeature.currentTarget.hand() == Hand.OFF_HAND && config.offhand)) &&
+                client.player != null &&
+                client.world != null &&
+                client.crosshairTarget != null;
+    }
+
+    public record ReacharoundTarget(BlockPos pos, Direction dir, Hand hand) {
     }
 }

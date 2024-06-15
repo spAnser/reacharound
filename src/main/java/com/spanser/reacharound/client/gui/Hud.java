@@ -1,16 +1,14 @@
 package com.spanser.reacharound.client.gui;
 
-import com.spanser.reacharound.Reacharound;
 import com.spanser.reacharound.client.feature.PlacementFeature;
 import com.spanser.reacharound.config.ReacharoundConfig;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import net.minecraft.util.Hand;
 
 public class Hud {
     private final MinecraftClient client;
-    private ReacharoundConfig config;
+    private final ReacharoundConfig config;
 
     public Hud(MinecraftClient client, ReacharoundConfig config) {
         this.client = client;
@@ -18,9 +16,7 @@ public class Hud {
     }
 
     public void renderPlacementAssistText(DrawContext context, float tickDelta) {
-        config = Reacharound.getInstance().config;
-
-        if (!canReachAround()) {
+        if (!config.render2d || !PlacementFeature.canReachAround(client)) {
             return;
         }
 
@@ -57,16 +53,16 @@ public class Hud {
 
         int color;
         if (PlacementFeature.canPlace(client.player)) {
-            color = config.indicatorColor;
+            color = config.indicatorColor2D;
         } else {
-            color = config.indicatorColorObstructed;
+            color = config.indicatorColor2DObstructed;
         }
 
         int alpha = (int) ((color >>> 24) * fade);
 
         color = (alpha << 24) | (color & 0x00ffffff);
 
-        switch (config.indicatorStyle) {
+        switch (config.indicator2DStyle) {
             case 1 -> renderStyleQuark(context, color);
             case 2 -> renderStyleCustom(context, color);
             default -> renderStyleDefault(context, color);
@@ -105,14 +101,5 @@ public class Hud {
     public void renderText(DrawContext context, int color, String text) {
         context.getMatrices().translate(-client.textRenderer.getWidth(text) / 2.0f, 0, 0);
         context.drawText(client.textRenderer, text, 0, 0, color, false);
-    }
-
-    private boolean canReachAround() {
-        return config.enabled &&
-                PlacementFeature.currentTarget != null &&
-                (PlacementFeature.currentTarget.hand() != Hand.OFF_HAND || (PlacementFeature.currentTarget.hand() == Hand.OFF_HAND && config.offhand)) &&
-                client.player != null &&
-                client.world != null &&
-                client.crosshairTarget != null;
     }
 }

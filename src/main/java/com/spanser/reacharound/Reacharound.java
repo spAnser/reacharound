@@ -5,6 +5,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
+import com.spanser.reacharound.client.gui.Overlay;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -15,6 +16,7 @@ import com.spanser.reacharound.config.ReacharoundConfig;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 
 public class Reacharound implements ClientModInitializer {
@@ -34,12 +36,15 @@ public class Reacharound implements ClientModInitializer {
 
         MinecraftClient client = MinecraftClient.getInstance();
         Hud hud = new Hud(client, this.config);
+        Overlay overlay = new Overlay(client, this.config);
 
         HudRenderCallback.EVENT.register((guiGraphics, tickCounter) -> {
             if (client.currentScreen == null) {
                 hud.renderPlacementAssistText(guiGraphics, tickCounter.getTickDelta(false));
             }
         });
+
+        WorldRenderEvents.AFTER_TRANSLUCENT.register(overlay::render);
 
         LOGGER.info("Reacharound Initialized.");
     }
