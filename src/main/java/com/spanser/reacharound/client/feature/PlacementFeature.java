@@ -2,18 +2,21 @@ package com.spanser.reacharound.client.feature;
 
 import com.spanser.reacharound.Reacharound;
 import com.spanser.reacharound.client.handler.RayTraceHandler;
+import com.spanser.reacharound.config.ReacharoundConfig;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
 import net.minecraft.block.enums.SlabType;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.network.ClientPlayerEntity;
 import net.minecraft.entity.Entity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
+import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -25,8 +28,8 @@ import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
 public class PlacementFeature {
+    private static final MinecraftClient client = MinecraftClient.getInstance();
     public static double leniency = 0.5;
-
     public static ReacharoundTarget currentTarget;
     public static int ticksDisplayed;
 
@@ -126,7 +129,7 @@ public class PlacementFeature {
         HitResult normalRes = RayTraceHandler.rayTrace(player, world, rayPos, ray, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE);
 
         if (normalRes.getType() == HitResult.Type.MISS) {
-            switch (Reacharound.getInstance().config.mode) {
+            switch (Reacharound.getInstance().config.axis) {
                 case 1 -> currentTarget = getPlayerHorizontalReacharoundTarget(player, hand, world, rayPos, ray);
                 case 2 -> currentTarget = getPlayerVerticalReacharoundTarget(player, hand, world, rayPos, ray);
                 default -> {
@@ -192,15 +195,59 @@ public class PlacementFeature {
         return item instanceof BlockItem;
     }
 
-    public record ReacharoundTarget(BlockPos pos, Direction dir, Hand hand) {
-        public ReacharoundTarget(BlockPos pos, Direction dir, Hand hand) {
-            this.pos = pos;
-            this.dir = dir;
-            this.hand = hand;
+    public static boolean isVertical() {
+        return PlacementFeature.currentTarget.dir.getAxis() == Direction.Axis.Y;
+    }
+
+    public static boolean canReachAround(MinecraftClient client) {
+        ReacharoundConfig config = Reacharound.getInstance().config;
+
+        return config.enabled &&
+                PlacementFeature.currentTarget != null &&
+                (PlacementFeature.currentTarget.hand() != Hand.OFF_HAND || (PlacementFeature.currentTarget.hand() == Hand.OFF_HAND && config.offhand)) &&
+                client.player != null &&
+                client.world != null &&
+                client.crosshairTarget != null;
+    }
+
+    public static void tick(MinecraftClient client) {
+        ReacharoundConfig config = Reacharound.getInstance().config;
+        if (!config.enabled) {
+            return;
+        }
+
+        PlacementFeature.currentTarget = null;
+
+        if (client.player != null)
+            PlacementFeature.checkPlayerReacharoundTarget(client.player);
+
+        if (PlacementFeature.currentTarget != null) {
+            if (PlacementFeature.ticksDisplayed < config.indicatorAnimationDuration) {
+                PlacementFeature.ticksDisplayed++;
+            }
+        } else {
+            PlacementFeature.ticksDisplayed = 0;
         }
     }
 
-    public static boolean isVertical() {
-        return PlacementFeature.currentTarget.dir.getAxis() == Direction.Axis.Y;
+    public static TypedActionResult<ItemStack> useItem(PlayerEntity player, World world, Hand hand) {
+        ItemStack itemStack = player.getStackInHand(hand);
+
+        if (!world.isClient) {
+            return TypedActionResult.pass(itemStack);
+        }
+
+        ReacharoundConfig config = Reacharound.getInstance().config;
+
+        if (config.enabled && (hand != Hand.OFF_HAND || (hand == Hand.OFF_HAND && config.offhand))) {
+            if (PlacementFeature.executeReacharound(client, hand, itemStack)) {
+                return TypedActionResult.success(itemStack);
+            }
+        }
+
+        return TypedActionResult.pass(itemStack);
+    }
+
+    public record ReacharoundTarget(BlockPos pos, Direction dir, Hand hand) {
     }
 }
