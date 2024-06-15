@@ -4,7 +4,6 @@ import com.spanser.reacharound.client.feature.PlacementFeature;
 import com.spanser.reacharound.config.ReacharoundConfig;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Hand;
 
 public class Hud {
     private final MinecraftClient client;
@@ -16,7 +15,7 @@ public class Hud {
     }
 
     public void renderPlacementAssistText(MatrixStack matrices, float deltaTime) {
-        if (!canReachAround()) {
+        if (!config.render2d || !PlacementFeature.canReachAround(client)) {
             return;
         }
 
@@ -53,16 +52,16 @@ public class Hud {
 
         int color;
         if (PlacementFeature.canPlace(client.player)) {
-            color = config.indicatorColor;
+            color = config.indicatorColor2D;
         } else {
-            color = config.indicatorColorObstructed;
+            color = config.indicatorColor2DObstructed;
         }
 
         int alpha = (int) ((color >>> 24) * fade);
 
         color = (alpha << 24) | (color & 0x00ffffff);
 
-        switch (config.indicatorStyle) {
+        switch (config.indicator2DStyle) {
             case 1 -> renderStyleQuark(matrices, color);
             case 2 -> renderStyleCustom(matrices, color);
             default -> renderStyleDefault(matrices, color);
@@ -101,14 +100,5 @@ public class Hud {
     public void renderText(MatrixStack matrices, int color, String text) {
         matrices.translate(-client.textRenderer.getWidth(text) / 2.0f, 0, 0);
         client.textRenderer.draw(matrices, text, 0, 0, color);
-    }
-
-    private boolean canReachAround() {
-        return config.enabled &&
-                PlacementFeature.currentTarget != null &&
-                (PlacementFeature.currentTarget.hand() != Hand.OFF_HAND || (PlacementFeature.currentTarget.hand() == Hand.OFF_HAND && config.offhand)) &&
-                client.player != null &&
-                client.world != null &&
-                client.crosshairTarget != null;
     }
 }

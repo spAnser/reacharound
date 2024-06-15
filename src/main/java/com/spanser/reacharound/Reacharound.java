@@ -1,5 +1,17 @@
 package com.spanser.reacharound;
 
+import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
+import java.io.IOException;
+
+import com.spanser.reacharound.client.feature.PlacementFeature;
+import com.spanser.reacharound.client.gui.Overlay;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.spanser.reacharound.client.gui.Hud;
@@ -7,15 +19,9 @@ import com.spanser.reacharound.config.ReacharoundConfig;
 
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
+import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import java.io.File;
-import java.io.FileReader;
-import java.io.FileWriter;
-import java.io.IOException;
 
 public class Reacharound implements ClientModInitializer {
     public static final Logger LOGGER = LogManager.getLogger();
@@ -33,12 +39,22 @@ public class Reacharound implements ClientModInitializer {
         instance = this;
         MinecraftClient client = MinecraftClient.getInstance();
         Hud hud = new Hud(client, config);
+        Overlay overlay = new Overlay(client, config);
+
+        ClientTickEvents.END_CLIENT_TICK.register(PlacementFeature::tick);
+
+        UseItemCallback.EVENT.register(PlacementFeature::useItem);
 
         HudRenderCallback.EVENT.register((matrices, deltaTime) -> {
             if (client.currentScreen == null) {
                 hud.renderPlacementAssistText(matrices, deltaTime);
             }
         });
+
+//        AFTER_TRANSLUCENT
+//        BEFORE_ENTITIES
+        WorldRenderEvents.AFTER_ENTITIES.register(overlay::render);
+
         LOGGER.info("Reacharound Initialized.");
     }
 
@@ -63,7 +79,11 @@ public class Reacharound implements ClientModInitializer {
         Gson gson = new GsonBuilder().setPrettyPrinting().create();
         File file = new File("./config/reacharound.json");
         if (!file.getParentFile().exists()) {
-            file.getParentFile().mkdir();
+            if (file.getParentFile().mkdir()) {
+                LOGGER.info("Created config directory.");
+            } else {
+                LOGGER.warn("Could not create config directory.");
+            }
         }
         try {
             FileWriter fileWriter = new FileWriter(file);
