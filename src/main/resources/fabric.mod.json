@@ -24,9 +24,7 @@
       "com.spanser.reacharound.client.integrations.ReacharoundModMenu"
     ]
   },
-  "mixins": [
-    "reacharound.mixins.json"
-  ],
+  "mixins": [],
   "depends": {
     "fabricloader": ">=0.15.11",
     "minecraft": ">=1.21-"
