@@ -81,7 +81,7 @@ public class Overlay {
 
                 drawBox(
                         context.matrixStack(),
-                        context.consumers().getBuffer(RenderLayer.getGui()),
+                        vertexConsumer,
                         (float) (PlacementFeature.currentTarget.pos().getX() - camera.getPos().getX()),
                         (float) (PlacementFeature.currentTarget.pos().getY() - camera.getPos().getY()),
                         (float) (PlacementFeature.currentTarget.pos().getZ() - camera.getPos().getZ()),
