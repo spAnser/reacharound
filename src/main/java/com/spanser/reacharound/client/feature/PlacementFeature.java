@@ -28,6 +28,7 @@ import org.apache.commons.lang3.tuple.Pair;
 
 public class PlacementFeature {
     private static final MinecraftClient client = MinecraftClient.getInstance();
+    private static final ReacharoundConfig config = Reacharound.getInstance().config;
     public static double leniency = 0.5;
     public static ReacharoundTarget currentTarget;
     public static int ticksDisplayed;
@@ -126,7 +127,7 @@ public class PlacementFeature {
         HitResult normalRes = RayTraceHandler.rayTrace(player, world, rayPos, ray, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE);
 
         if (normalRes.getType() == HitResult.Type.MISS) {
-            switch (Reacharound.getInstance().config.axis) {
+            switch (config.axis) {
                 case 1 -> currentTarget = getPlayerHorizontalReacharoundTarget(player, hand, world, rayPos, ray);
                 case 2 -> currentTarget = getPlayerVerticalReacharoundTarget(player, hand, world, rayPos, ray);
                 default -> {
@@ -197,7 +198,6 @@ public class PlacementFeature {
     }
 
     public static boolean canReachAround(MinecraftClient client) {
-        ReacharoundConfig config = Reacharound.getInstance().config;
 
         return config.enabled &&
                 PlacementFeature.currentTarget != null &&
@@ -208,7 +208,6 @@ public class PlacementFeature {
     }
 
     public static void tick(MinecraftClient client) {
-        ReacharoundConfig config = Reacharound.getInstance().config;
         if (!config.enabled) {
             return;
         }
@@ -233,8 +232,6 @@ public class PlacementFeature {
         if (!world.isClient) {
             return ActionResult.PASS;
         }
-
-        ReacharoundConfig config = Reacharound.getInstance().config;
 
         if (config.enabled && (hand != Hand.OFF_HAND || (hand == Hand.OFF_HAND && config.offhand))) {
             if (PlacementFeature.executeReacharound(client, hand, itemStack)) {
