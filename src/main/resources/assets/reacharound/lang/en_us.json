@@ -4,6 +4,7 @@
   "reacharound.config.indicator2d": "Indicator 2D",
   "reacharound.config.indicator3d": "Indicator 3D",
   "reacharound.config.indicator.enabled": "Enabled",
+  "reacharound.config.indicator.disabled": "Disabled",
   "reacharound.config.indicator.offhand": "Allow placing with Offhand",
   "reacharound.config.indicator.render2d": "Render 2D",
   "reacharound.config.indicator.render3d": "Render 3D",
@@ -36,5 +37,7 @@
   "reacharound.config.animation.interpolation.quadratic": "Quadratic",
   "reacharound.config.animation.interpolation.cubic": "Cubic",
   "reacharound.config.animation.interpolation.none": "None",
-  "reacharound.config.animation.fadeInterpolation": "Fade Interpolation"
+  "reacharound.config.animation.fadeInterpolation": "Fade Interpolation",
+  "reacharound.keybinding.category": "Reacharound",
+  "reacharound.keybinding.toggle": "Toggle Reacharound"
 }
