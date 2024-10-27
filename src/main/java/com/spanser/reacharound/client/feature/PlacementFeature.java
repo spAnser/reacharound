@@ -16,7 +16,6 @@ import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
-import net.minecraft.util.TypedActionResult;
 import net.minecraft.util.hit.BlockHitResult;
 import net.minecraft.util.hit.HitResult;
 import net.minecraft.util.math.BlockPos;
@@ -85,10 +84,10 @@ public class PlacementFeature {
 
             Direction direction;
             if (isVertical()) {
-                direction = Direction.fromVector(0, isLookingDown ? -1 : 1, 0);
+                direction = Direction.fromVector(0, isLookingDown ? -1 : 1, 0, Direction.UP);
             } else {
                 Vec3i facing = client.player.getHorizontalFacing().getVector();
-                direction = Direction.fromVector(-facing.getX(), 0, -facing.getZ());
+                direction = Direction.fromVector(-facing.getX(), 0, -facing.getZ(), Direction.NORTH);
             }
 
             blockHitResult = new BlockHitResult(source, direction, currentTarget.pos(), false);
@@ -96,11 +95,9 @@ public class PlacementFeature {
             int count = itemStack.getCount();
             ActionResult result = client.interactionManager.interactBlock(client.player, hand, blockHitResult);
             if (result.isAccepted()) {
-                if (result.shouldSwingHand()) {
-                    client.player.swingHand(hand);
-                    if (!itemStack.isEmpty() && (itemStack.getCount() != count || client.interactionManager.hasCreativeInventory())) {
-                        client.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
-                    }
+                client.player.swingHand(hand);
+                if (!itemStack.isEmpty() && (itemStack.getCount() != count || client.interactionManager.hasCreativeInventory())) {
+                    client.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
                 }
 
                 return true;
@@ -230,22 +227,22 @@ public class PlacementFeature {
         }
     }
 
-    public static TypedActionResult<ItemStack> useItem(PlayerEntity player, World world, Hand hand) {
+    public static ActionResult useItem(PlayerEntity player, World world, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
 
         if (!world.isClient) {
-            return TypedActionResult.pass(itemStack);
+            return ActionResult.PASS;
         }
 
         ReacharoundConfig config = Reacharound.getInstance().config;
 
         if (config.enabled && (hand != Hand.OFF_HAND || (hand == Hand.OFF_HAND && config.offhand))) {
             if (PlacementFeature.executeReacharound(client, hand, itemStack)) {
-                return TypedActionResult.success(itemStack);
+                return ActionResult.SUCCESS;
             }
         }
 
-        return TypedActionResult.pass(itemStack);
+        return ActionResult.PASS;
     }
 
     public record ReacharoundTarget(BlockPos pos, Direction dir, Hand hand) {

@@ -5,6 +5,7 @@ import com.spanser.reacharound.config.ReacharoundConfig;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
+import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.util.math.MatrixStack;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
@@ -107,7 +108,7 @@ public class Overlay {
                 float r = ((colorOutline >> 16) & 0xFF) / 255f;
                 float g = ((colorOutline >> 8) & 0xFF) / 255f;
                 float b = (colorOutline & 0xFF) / 255f;
-                WorldRenderer.drawShapeOutline(
+                DebugRenderer.drawVoxelShapeOutlines(
                         context.matrixStack(),
                         vertexConsumer,
                         shape,
