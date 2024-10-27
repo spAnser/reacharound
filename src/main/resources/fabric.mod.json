@@ -27,6 +27,7 @@
   "mixins": [],
   "depends": {
     "fabricloader": ">=0.14.7",
+    "fabric-key-binding-api-v1": "*",
     "minecraft": ">=1.19-"
   },
   "recommends": {
