@@ -8,7 +8,10 @@ import java.io.IOException;
 import com.spanser.reacharound.client.feature.PlacementFeature;
 import com.spanser.reacharound.client.gui.Overlay;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
 import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.minecraft.client.option.KeyBinding;
+import net.minecraft.client.util.InputUtil;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,10 +24,12 @@ import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
 import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderEvents;
 import net.minecraft.client.MinecraftClient;
+import org.lwjgl.glfw.GLFW;
 
 public class Reacharound implements ClientModInitializer {
     public static final Logger LOGGER = LogManager.getLogger();
     private static Reacharound instance;
+    public KeyBinding keyBindingToggle;
     public ReacharoundConfig config;
 
     public static Reacharound getInstance() {
@@ -52,6 +57,15 @@ public class Reacharound implements ClientModInitializer {
         });
 
         WorldRenderEvents.AFTER_TRANSLUCENT.register(overlay::render);
+
+        keyBindingToggle = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+                "reacharound.keybinding.toggle",
+                InputUtil.Type.KEYSYM,
+                GLFW.GLFW_KEY_UNKNOWN,
+                "reacharound.keybinding.category"
+        ));
+
+        ClientTickEvents.END_CLIENT_TICK.register(PlacementFeature::keybindToggle);
 
         LOGGER.info("Reacharound Initialized.");
     }
