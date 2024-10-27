@@ -14,6 +14,7 @@ import net.minecraft.item.BlockItem;
 import net.minecraft.item.Item;
 import net.minecraft.item.ItemStack;
 import net.minecraft.state.property.Properties;
+import net.minecraft.text.Text;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.util.TypedActionResult;
@@ -243,6 +244,15 @@ public class PlacementFeature {
         }
 
         return TypedActionResult.pass(itemStack);
+    }
+
+    public static void keybindToggle(MinecraftClient client) {
+        while (Reacharound.getInstance().keyBindingToggle.wasPressed()) {
+            config.enabled = !config.enabled;
+
+            Text enabledText = Text.translatable(config.enabled ? "reacharound.config.indicator.enabled" : "reacharound.config.indicator.disabled");
+            client.player.sendMessage(Text.literal("Reacharound ").append(enabledText), false);
+        }
     }
 
     public record ReacharoundTarget(BlockPos pos, Direction dir, Hand hand) {
