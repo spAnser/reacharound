@@ -52,7 +52,7 @@ public class Reacharound implements ClientModInitializer {
 
         HudRenderCallback.EVENT.register((guiGraphics, tickCounter) -> {
             if (client.currentScreen == null) {
-                hud.renderPlacementAssistText(guiGraphics, tickCounter.getTickDelta(false));
+                hud.renderPlacementAssistText(guiGraphics, tickCounter.getTickProgress(false));
             }
         });
 

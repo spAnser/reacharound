@@ -98,7 +98,7 @@ public class PlacementFeature {
             ActionResult result = client.interactionManager.interactBlock(client.player, hand, blockHitResult);
             if (result.isAccepted()) {
                 client.player.swingHand(hand);
-                if (!itemStack.isEmpty() && (itemStack.getCount() != count || client.interactionManager.hasCreativeInventory())) {
+                if (!itemStack.isEmpty() && (itemStack.getCount() != count || client.player.isInCreativeMode())) {
                     client.gameRenderer.firstPersonRenderer.resetEquipProgress(hand);
                 }
 
@@ -174,7 +174,7 @@ public class PlacementFeature {
     }
 
     private static ReacharoundTarget getPlayerHorizontalReacharoundTarget(Entity player, Hand hand, World world, Vec3d rayPos, Vec3d ray) {
-        Direction dir = Direction.fromRotation(player.getYaw());
+        Direction dir = Direction.fromHorizontalDegrees(player.getYaw());
         rayPos = rayPos.subtract(leniency * dir.getOffsetX(), 0, leniency * dir.getOffsetZ());
         HitResult take2Res = RayTraceHandler.rayTrace(player, world, rayPos, ray, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE);
 
