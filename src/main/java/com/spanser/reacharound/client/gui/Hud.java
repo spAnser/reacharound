@@ -5,6 +5,7 @@ import com.spanser.reacharound.config.ReacharoundConfig;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
+import org.joml.Matrix3x2f;
 
 public class Hud {
     private final MinecraftClient client;
@@ -20,11 +21,11 @@ public class Hud {
             return;
         }
 
-        context.getMatrices().push();
+        context.getMatrices().pushMatrix();
         context.getMatrices().translate(
                 context.getScaledWindowWidth() / 2f + config.indicatorOffsetX,
                 context.getScaledWindowHeight() / 2f - 4 + config.indicatorOffsetY,
-                0
+                new Matrix3x2f()
         );
 
         int duration = config.indicatorAnimationDuration;
@@ -49,7 +50,7 @@ public class Hud {
             case 3 -> scale *= scale * scale; // cubic
             default -> scale = 1; // none
         }
-        context.getMatrices().scale(scale, 1f, 1f);
+        context.getMatrices().scale(scale, 1f);
 
         int color;
         if (PlacementFeature.canPlace(client.player)) {
@@ -68,15 +69,15 @@ public class Hud {
             default -> renderStyleDefault(context, color);
         }
 
-        context.getMatrices().pop();
+        context.getMatrices().popMatrix();
     }
 
     public void renderStyleDefault(DrawContext context, int color) {
         if (PlacementFeature.isVertical()) {
             if ((client.player != null ? client.player.getPitch() : 0) < 0) {
-                context.getMatrices().translate(0, -4, 0);
+                context.getMatrices().translate(0, -4, new Matrix3x2f());
             } else {
-                context.getMatrices().translate(0, 4, 0);
+                context.getMatrices().translate(0, 4, new Matrix3x2f());
             }
         }
 
@@ -99,7 +100,7 @@ public class Hud {
     }
 
     public void renderText(DrawContext context, int color, String text) {
-        context.getMatrices().translate(-client.textRenderer.getWidth(text) / 2.0f, 0, 0);
+        context.getMatrices().translate(-client.textRenderer.getWidth(text) / 2.0f, 0, new Matrix3x2f());
         context.drawText(client.textRenderer, text, 0, 0, color, false);
     }
 }

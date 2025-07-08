@@ -7,6 +7,7 @@ import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.util.math.MatrixStack;
+import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
@@ -70,7 +71,7 @@ public class Overlay {
         Camera camera = context.camera();
 
         if (config.indicator3DStyle != 1) {
-            VertexConsumer vertexConsumer = context.consumers().getBuffer(RenderLayer.getGui());
+            VertexConsumer vertexConsumer = context.consumers().getBuffer(RenderLayer.getDebugQuads());
 
             if (vertexConsumer != null) {
                 int colorSolid;
