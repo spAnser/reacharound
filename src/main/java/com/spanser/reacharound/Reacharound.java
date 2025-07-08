@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 
 import com.spanser.reacharound.client.feature.PlacementFeature;
 import com.spanser.reacharound.client.gui.Overlay;
@@ -75,7 +76,7 @@ public class Reacharound implements ClientModInitializer {
         Gson gson = new Gson();
         if (file.exists()) {
             try {
-                FileReader fileReader = new FileReader(file);
+                FileReader fileReader = new FileReader(file, StandardCharsets.UTF_8);
                 config = gson.fromJson(fileReader, ReacharoundConfig.class);
                 fileReader.close();
             } catch (IOException e) {
@@ -98,7 +99,7 @@ public class Reacharound implements ClientModInitializer {
             }
         }
         try {
-            FileWriter fileWriter = new FileWriter(file);
+            FileWriter fileWriter = new FileWriter(file, StandardCharsets.UTF_8);
             fileWriter.write(gson.toJson(config));
             fileWriter.close();
         } catch (IOException e) {

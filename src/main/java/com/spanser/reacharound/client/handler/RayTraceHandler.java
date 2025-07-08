@@ -17,25 +17,25 @@ public class RayTraceHandler {
     }
 
     public static Pair<Vec3d, Vec3d> getEntityParams(Entity player) {
-        float scale = 1.0F;
-        float pitch = player.lastPitch + (player.getPitch() - player.lastPitch) * scale;
-        float yaw = player.lastYaw + (player.getYaw() - player.lastYaw) * scale;
+        // Get the player's current rotation
+        float pitch = player.getPitch();
+        float yaw = player.getYaw();
+        
+        // Calculate eye position
         Vec3d pos = player.getPos();
-        double posX = player.lastX + (pos.x - player.lastX) * scale;
-        double posY = player.lastY + (pos.y - player.lastY) * scale;
-        if (player instanceof PlayerEntity) {
-            posY += player.getEyeHeight(player.getPose());
-        }
-        double posZ = player.lastZ + (pos.z - player.lastZ) * scale;
-        Vec3d rayPos = new Vec3d(posX, posY, posZ);
+        double eyeHeight = player instanceof PlayerEntity ? player.getEyeHeight(player.getPose()) : 0;
+        Vec3d rayPos = new Vec3d(pos.x, pos.y + eyeHeight, pos.z);
 
-        float zYaw = -MathHelper.cos(yaw * (float) Math.PI / 180);
-        float xYaw = MathHelper.sin(yaw * (float) Math.PI / 180);
-        float pitchMod = -MathHelper.cos(pitch * (float) Math.PI / 180);
-        float azimuth = -MathHelper.sin(pitch * (float) Math.PI / 180);
-        float xLen = xYaw * pitchMod;
-        float yLen = zYaw * pitchMod;
-        Vec3d ray = new Vec3d(xLen, azimuth, yLen);
+        // Calculate look direction vector
+        float yawRad = yaw * (float) Math.PI / 180;
+        float pitchRad = pitch * (float) Math.PI / 180;
+        
+        float horizontalFactor = -MathHelper.cos(pitchRad);
+        float x = MathHelper.sin(yawRad) * horizontalFactor;
+        float y = -MathHelper.sin(pitchRad);
+        float z = -MathHelper.cos(yawRad) * horizontalFactor;
+        
+        Vec3d ray = new Vec3d(x, y, z).normalize();
 
         return Pair.of(rayPos, ray);
     }

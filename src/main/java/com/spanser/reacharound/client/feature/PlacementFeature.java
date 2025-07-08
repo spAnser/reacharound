@@ -27,12 +27,43 @@ import net.minecraft.world.RaycastContext;
 import net.minecraft.world.World;
 import org.apache.commons.lang3.tuple.Pair;
 
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.Objects;
+
 public class PlacementFeature {
     private static final MinecraftClient client = MinecraftClient.getInstance();
     private static final ReacharoundConfig config = Reacharound.getInstance().config;
-    public static double leniency = 0.5;
-    public static ReacharoundTarget currentTarget;
+    private static volatile ReacharoundTarget currentTarget;
     public static int ticksDisplayed;
+    
+    // Constants
+    private static final double MIN_VERTICAL_DISTANCE = 1.0;
+    private static final float LENIENCY_HORIZONTAL = 0.5f;
+    private static final float LENIENCY_VERTICAL = 0.5f;
+    private static final float RANGE_ADJUSTMENT = 0.5f;
+    
+    // Ray trace cache to avoid duplicate calculations within the same tick
+    private static final Map<RayTraceKey, HitResult> rayTraceCache = new ConcurrentHashMap<>();
+    
+    public static synchronized ReacharoundTarget getCurrentTarget() {
+        return currentTarget;
+    }
+    
+    private static synchronized void setCurrentTarget(ReacharoundTarget target) {
+        currentTarget = target;
+    }
+    
+    // Cached ray trace method to avoid duplicate calculations
+    private static HitResult cachedRayTrace(Entity entity, World world, Vec3d startPos, Vec3d ray, RaycastContext.ShapeType blockMode, RaycastContext.FluidHandling fluidMode) {
+        Vec3d endPos = startPos.add(ray);
+        RayTraceKey key = new RayTraceKey(startPos, endPos, blockMode, fluidMode);
+        
+        return rayTraceCache.computeIfAbsent(key, k -> {
+            RaycastContext context = new RaycastContext(startPos, endPos, blockMode, fluidMode, entity);
+            return world.raycast(context);
+        });
+    }
 
     private static boolean blockIsTopSlab(BlockState block) {
         return block.contains(Properties.SLAB_TYPE) && block.get(Properties.SLAB_TYPE) == SlabType.TOP;
@@ -48,15 +79,16 @@ public class PlacementFeature {
         if (isVertical()) {
             boolean isLookingDown = player.getPitch() > 0;
 
-            block = player.getWorld().getBlockState(currentTarget.pos().add(0, isLookingDown ? 1 : -1, 0));
+            ReacharoundTarget target = getCurrentTarget();
+            block = player.getWorld().getBlockState(target.pos().add(0, isLookingDown ? 1 : -1, 0));
             if (isLookingDown && blockIsTopSlab(block)) {
-                currentTarget = new ReacharoundTarget(currentTarget.pos().add(0, 1, 0), currentTarget.dir(), currentTarget.hand());
+                setCurrentTarget(new ReacharoundTarget(target.pos().add(0, 1, 0), target.dir(), target.hand()));
             } else if (!isLookingDown && blockIsBottomSlab(block)) {
-                currentTarget = new ReacharoundTarget(currentTarget.pos().add(0, -1, 0), currentTarget.dir(), currentTarget.hand());
+                setCurrentTarget(new ReacharoundTarget(target.pos().add(0, -1, 0), target.dir(), target.hand()));
             }
         } else {
             Vec3i facing = player.getHorizontalFacing().getVector();
-            block = player.getWorld().getBlockState(currentTarget.pos().add(-facing.getX(), 0, -facing.getZ()));
+            block = player.getWorld().getBlockState(getCurrentTarget().pos().add(-facing.getX(), 0, -facing.getZ()));
         }
 
         return block;
@@ -64,16 +96,18 @@ public class PlacementFeature {
 
     public static boolean canPlace(ClientPlayerEntity player) {
         BlockState block = getPlacement(player);
-        return player.getWorld().canPlace(block, currentTarget.pos(), ShapeContext.absent());
+        ReacharoundTarget target = getCurrentTarget();
+        return target != null && player.getWorld().canPlace(block, target.pos(), ShapeContext.absent());
     }
 
     public static boolean executeReacharound(MinecraftClient client, Hand hand, ItemStack itemStack) {
-        if (currentTarget != null) {
+        ReacharoundTarget target = getCurrentTarget();
+        if (target != null) {
             BlockHitResult blockHitResult;
 
-            int x = currentTarget.pos().getX();
-            int y = currentTarget.pos().getY();
-            int z = currentTarget.pos().getZ();
+            int x = target.pos().getX();
+            int y = target.pos().getY();
+            int z = target.pos().getZ();
             Vec3d source = new Vec3d(x, y, z);
 
             boolean isLookingDown = client.player.getPitch() > 0;
@@ -92,7 +126,7 @@ public class PlacementFeature {
                 direction = Direction.fromVector(-facing.getX(), 0, -facing.getZ(), Direction.NORTH);
             }
 
-            blockHitResult = new BlockHitResult(source, direction, currentTarget.pos(), false);
+            blockHitResult = new BlockHitResult(source, direction, target.pos(), false);
 
             int count = itemStack.getCount();
             ActionResult result = client.interactionManager.interactBlock(client.player, hand, blockHitResult);
@@ -121,23 +155,23 @@ public class PlacementFeature {
         World world = player.getWorld();
 
         Pair<Vec3d, Vec3d> params = RayTraceHandler.getEntityParams(player);
-        double range = player.getBlockInteractionRange() - 0.5f;
+        double range = player.getBlockInteractionRange() - RANGE_ADJUSTMENT;
         Vec3d rayPos = params.getLeft().add(params.getRight().multiply(0.5f));
         Vec3d ray = params.getRight().multiply(range);
 
-        HitResult normalRes = RayTraceHandler.rayTrace(player, world, rayPos, ray, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE);
+        HitResult normalRes = cachedRayTrace(player, world, rayPos, ray, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE);
 
         if (normalRes.getType() == HitResult.Type.MISS) {
             switch (config.axis) {
-                case 1 -> currentTarget = getPlayerHorizontalReacharoundTarget(player, hand, world, rayPos, ray);
-                case 2 -> currentTarget = getPlayerVerticalReacharoundTarget(player, hand, world, rayPos, ray);
+                case 1 -> setCurrentTarget(getPlayerHorizontalReacharoundTarget(player, hand, world, rayPos, ray));
+                case 2 -> setCurrentTarget(getPlayerVerticalReacharoundTarget(player, hand, world, rayPos, ray));
                 default -> {
                     ReacharoundTarget target = getPlayerVerticalReacharoundTarget(player, hand, world, rayPos, ray);
                     if (target != null) {
-                        currentTarget = target;
+                        setCurrentTarget(target);
                         break;
                     }
-                    currentTarget = getPlayerHorizontalReacharoundTarget(player, hand, world, rayPos, ray);
+                    setCurrentTarget(getPlayerHorizontalReacharoundTarget(player, hand, world, rayPos, ray));
                 }
             }
         }
@@ -146,14 +180,14 @@ public class PlacementFeature {
     private static ReacharoundTarget getPlayerVerticalReacharoundTarget(Entity player, Hand hand, World world, Vec3d rayPos, Vec3d ray) {
         boolean isLookingDown = player.getPitch() > 0;
         if (isLookingDown) {
-            rayPos = rayPos.add(0, leniency, 0);
+            rayPos = rayPos.add(0, LENIENCY_VERTICAL, 0);
         } else {
-            rayPos = rayPos.add(0, -leniency, 0);
+            rayPos = rayPos.add(0, -LENIENCY_VERTICAL, 0);
         }
-        HitResult take2Res = RayTraceHandler.rayTrace(player, world, rayPos, ray, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE);
+        HitResult take2Res = cachedRayTrace(player, world, rayPos, ray, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE);
 
-        if (take2Res.getType() == HitResult.Type.BLOCK) {
-            BlockPos pos = ((BlockHitResult) take2Res).getBlockPos();
+        if (take2Res.getType() == HitResult.Type.BLOCK && take2Res instanceof BlockHitResult blockHitResult) {
+            BlockPos pos = blockHitResult.getBlockPos();
             if (isLookingDown) {
                 pos = pos.down();
             } else {
@@ -166,7 +200,12 @@ public class PlacementFeature {
                 distance = -distance;
             }
 
-            if (distance > 1 && (state.isAir() || state.isReplaceable()))
+            // Check world height limits
+            if (pos.getY() < world.getBottomY() || pos.getY() >= world.getTopYInclusive()) {
+                return null;
+            }
+            
+            if (distance > MIN_VERTICAL_DISTANCE && (state.isAir() || state.isReplaceable()))
                 return new ReacharoundTarget(pos, isLookingDown ? Direction.DOWN : Direction.UP, hand);
         }
 
@@ -175,13 +214,18 @@ public class PlacementFeature {
 
     private static ReacharoundTarget getPlayerHorizontalReacharoundTarget(Entity player, Hand hand, World world, Vec3d rayPos, Vec3d ray) {
         Direction dir = Direction.fromHorizontalDegrees(player.getYaw());
-        rayPos = rayPos.subtract(leniency * dir.getOffsetX(), 0, leniency * dir.getOffsetZ());
-        HitResult take2Res = RayTraceHandler.rayTrace(player, world, rayPos, ray, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE);
+        rayPos = rayPos.subtract(LENIENCY_HORIZONTAL * dir.getOffsetX(), 0, LENIENCY_HORIZONTAL * dir.getOffsetZ());
+        HitResult take2Res = cachedRayTrace(player, world, rayPos, ray, RaycastContext.ShapeType.OUTLINE, RaycastContext.FluidHandling.NONE);
 
-        if (take2Res.getType() == HitResult.Type.BLOCK) {
-            BlockPos pos = ((BlockHitResult) take2Res).getBlockPos().offset(dir);
+        if (take2Res.getType() == HitResult.Type.BLOCK && take2Res instanceof BlockHitResult blockHit) {
+            BlockPos pos = blockHit.getBlockPos().offset(dir);
+            
+            // Check world height limits
+            if (pos.getY() < world.getBottomY() || pos.getY() >= world.getTopYInclusive()) {
+                return null;
+            }
+            
             BlockState state = world.getBlockState(pos);
-
             if ((state.isAir() || state.isReplaceable()))
                 return new ReacharoundTarget(pos, dir.getOpposite(), hand);
         }
@@ -195,14 +239,15 @@ public class PlacementFeature {
     }
 
     public static boolean isVertical() {
-        return PlacementFeature.currentTarget.dir.getAxis() == Direction.Axis.Y;
+        ReacharoundTarget target = getCurrentTarget();
+        return target != null && target.dir().getAxis() == Direction.Axis.Y;
     }
 
     public static boolean canReachAround(MinecraftClient client) {
-
+        ReacharoundTarget target = getCurrentTarget();
         return config.enabled &&
-                PlacementFeature.currentTarget != null &&
-                (PlacementFeature.currentTarget.hand() != Hand.OFF_HAND || (PlacementFeature.currentTarget.hand() == Hand.OFF_HAND && config.offhand)) &&
+                target != null &&
+                (target.hand() != Hand.OFF_HAND || (target.hand() == Hand.OFF_HAND && config.offhand)) &&
                 client.player != null &&
                 client.world != null &&
                 client.crosshairTarget != null;
@@ -213,12 +258,15 @@ public class PlacementFeature {
             return;
         }
 
-        PlacementFeature.currentTarget = null;
+        // Clear ray trace cache at the start of each tick
+        rayTraceCache.clear();
+        
+        setCurrentTarget(null);
 
         if (client.player != null)
             PlacementFeature.checkPlayerReacharoundTarget(client.player);
 
-        if (PlacementFeature.currentTarget != null) {
+        if (getCurrentTarget() != null) {
             if (PlacementFeature.ticksDisplayed < config.indicatorAnimationDuration) {
                 PlacementFeature.ticksDisplayed++;
             }
@@ -253,5 +301,36 @@ public class PlacementFeature {
     }
 
     public record ReacharoundTarget(BlockPos pos, Direction dir, Hand hand) {
+    }
+    
+    // Ray trace cache key
+    private static class RayTraceKey {
+        private final Vec3d start;
+        private final Vec3d end;
+        private final RaycastContext.ShapeType shapeType;
+        private final RaycastContext.FluidHandling fluidHandling;
+        
+        public RayTraceKey(Vec3d start, Vec3d end, RaycastContext.ShapeType shapeType, RaycastContext.FluidHandling fluidHandling) {
+            this.start = start;
+            this.end = end;
+            this.shapeType = shapeType;
+            this.fluidHandling = fluidHandling;
+        }
+        
+        @Override
+        public boolean equals(Object obj) {
+            if (this == obj) return true;
+            if (obj == null || getClass() != obj.getClass()) return false;
+            RayTraceKey that = (RayTraceKey) obj;
+            return Objects.equals(start, that.start) &&
+                   Objects.equals(end, that.end) &&
+                   shapeType == that.shapeType &&
+                   fluidHandling == that.fluidHandling;
+        }
+        
+        @Override
+        public int hashCode() {
+            return Objects.hash(start, end, shapeType, fluidHandling);
+        }
     }
 }

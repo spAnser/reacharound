@@ -80,15 +80,16 @@ public class Overlay {
                     colorSolid = config.indicatorColor3DObstructedSolid;
                 }
 
+                PlacementFeature.ReacharoundTarget target = PlacementFeature.getCurrentTarget();
                 drawBox(
                         context.matrixStack(),
                         vertexConsumer,
-                        (float) (PlacementFeature.currentTarget.pos().getX() - camera.getPos().getX()),
-                        (float) (PlacementFeature.currentTarget.pos().getY() - camera.getPos().getY()),
-                        (float) (PlacementFeature.currentTarget.pos().getZ() - camera.getPos().getZ()),
-                        (float) (PlacementFeature.currentTarget.pos().getX() - camera.getPos().getX() + 1),
-                        (float) (PlacementFeature.currentTarget.pos().getY() - camera.getPos().getY() + 1),
-                        (float) (PlacementFeature.currentTarget.pos().getZ() - camera.getPos().getZ() + 1),
+                        (float) (target.pos().getX() - camera.getPos().getX()),
+                        (float) (target.pos().getY() - camera.getPos().getY()),
+                        (float) (target.pos().getZ() - camera.getPos().getZ()),
+                        (float) (target.pos().getX() - camera.getPos().getX() + 1),
+                        (float) (target.pos().getY() - camera.getPos().getY() + 1),
+                        (float) (target.pos().getZ() - camera.getPos().getZ() + 1),
                         colorSolid
                 );
             }
@@ -108,13 +109,14 @@ public class Overlay {
                 float r = ((colorOutline >> 16) & 0xFF) / 255f;
                 float g = ((colorOutline >> 8) & 0xFF) / 255f;
                 float b = (colorOutline & 0xFF) / 255f;
+                PlacementFeature.ReacharoundTarget target = PlacementFeature.getCurrentTarget();
                 DebugRenderer.drawVoxelShapeOutlines(
                         context.matrixStack(),
                         vertexConsumer,
                         shape,
-                        PlacementFeature.currentTarget.pos().getX() - camera.getPos().getX(),
-                        PlacementFeature.currentTarget.pos().getY() - camera.getPos().getY(),
-                        PlacementFeature.currentTarget.pos().getZ() - camera.getPos().getZ(),
+                        target.pos().getX() - camera.getPos().getX(),
+                        target.pos().getY() - camera.getPos().getY(),
+                        target.pos().getZ() - camera.getPos().getZ(),
                         r, g, b, a, true
                 );
             }
