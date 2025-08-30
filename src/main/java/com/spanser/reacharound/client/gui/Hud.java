@@ -5,7 +5,6 @@ import com.spanser.reacharound.config.ReacharoundConfig;
 
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.gui.DrawContext;
-import org.joml.Matrix3x2f;
 
 public class Hud {
     private final MinecraftClient client;
@@ -24,8 +23,7 @@ public class Hud {
         context.getMatrices().pushMatrix();
         context.getMatrices().translate(
                 context.getScaledWindowWidth() / 2f + config.indicatorOffsetX,
-                context.getScaledWindowHeight() / 2f - 4 + config.indicatorOffsetY,
-                new Matrix3x2f()
+                context.getScaledWindowHeight() / 2f - 4 + config.indicatorOffsetY
         );
 
         int duration = config.indicatorAnimationDuration;
@@ -75,9 +73,9 @@ public class Hud {
     public void renderStyleDefault(DrawContext context, int color) {
         if (PlacementFeature.isVertical()) {
             if ((client.player != null ? client.player.getPitch() : 0) < 0) {
-                context.getMatrices().translate(0, -4, new Matrix3x2f());
+                context.getMatrices().translate(0, -4);
             } else {
-                context.getMatrices().translate(0, 4, new Matrix3x2f());
+                context.getMatrices().translate(0, 4);
             }
         }
 
@@ -100,7 +98,7 @@ public class Hud {
     }
 
     public void renderText(DrawContext context, int color, String text) {
-        context.getMatrices().translate(-client.textRenderer.getWidth(text) / 2.0f, 0, new Matrix3x2f());
+        context.getMatrices().translate(-client.textRenderer.getWidth(text) / 2f, 0);
         context.drawText(client.textRenderer, text, 0, 0, color, false);
     }
 }
