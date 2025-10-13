@@ -1,6 +1,7 @@
 package com.spanser.reacharound.mixin;
 
 import com.mojang.blaze3d.buffers.GpuBufferSlice;
+import com.spanser.reacharound.Reacharound;
 import com.spanser.reacharound.client.feature.PlacementFeature;
 import net.minecraft.block.BlockState;
 import net.minecraft.block.ShapeContext;
@@ -24,6 +25,7 @@ import org.joml.Vector4f;
 import org.spongepowered.asm.mixin.Final;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
@@ -34,7 +36,7 @@ public abstract class WorldRendererMixin {
     @Shadow @Final private WorldRenderState worldRenderState;
     @Shadow private ClientWorld world;
 
-    // (We won't draw manually here; vanilla will call renderTargetBlockOutline later if we set the state.)
+    // We won't draw manually here; vanilla will call renderTargetBlockOutline later if we set the state
     @Inject(
             method = "render(Lnet/minecraft/client/util/ObjectAllocator;Lnet/minecraft/client/render/RenderTickCounter;ZLnet/minecraft/client/render/Camera;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lorg/joml/Matrix4f;Lcom/mojang/blaze3d/buffers/GpuBufferSlice;Lorg/joml/Vector4f;Z)V",
             at = @At(
@@ -52,7 +54,6 @@ public abstract class WorldRendererMixin {
         if (this.worldRenderState.outlineRenderState != null)
             return;
 
-        // Our ghost target
         var target = PlacementFeature.getCurrentTarget();
         BlockPos ghostPos = (target != null) ? target.pos() : null;
         if (ghostPos == null || this.world == null)
@@ -70,9 +71,12 @@ public abstract class WorldRendererMixin {
             if (!s.isEmpty()) shape = s;
         }
 
+        var config = Reacharound.getInstance().config;
+
         // Decide translucency: we can safely force false so it gets drawn in the first call,
         // because renderMain will call renderTargetBlockOutline twice (false, then true).
-        boolean translucent = false;
+        boolean translucent = config.indicator3DStyle == 2 || config.indicator3DStyle == 0;
+        var color = config.indicatorColor3DSolid;
         boolean highContrast = this.client.options.getHighContrastBlockOutline().getValue();
 
         // IMPORTANT: clone the position so it can't mutate later
@@ -81,6 +85,7 @@ public abstract class WorldRendererMixin {
     }
 
     // Helper: try to infer what block would be placed; fall back to default state
+    @Unique
     private static BlockState getPlacingStateFromHeldItem(PlayerEntity player, BlockPos pos) {
         if (player == null) return null;
         ItemStack stack = player.getMainHandStack();
