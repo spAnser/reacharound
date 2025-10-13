@@ -22,7 +22,7 @@ public class RayTraceHandler {
         float yaw = player.getYaw();
         
         // Calculate eye position
-        Vec3d pos = player.getPos();
+        Vec3d pos = player.getEntityPos();
         double eyeHeight = player instanceof PlayerEntity ? player.getEyeHeight(player.getPose()) : 0;
         Vec3d rayPos = new Vec3d(pos.x, pos.y + eyeHeight, pos.z);
 

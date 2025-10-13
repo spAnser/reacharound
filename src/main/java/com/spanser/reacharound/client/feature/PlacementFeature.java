@@ -80,7 +80,7 @@ public class PlacementFeature {
             boolean isLookingDown = player.getPitch() > 0;
 
             ReacharoundTarget target = getCurrentTarget();
-            block = player.getWorld().getBlockState(target.pos().add(0, isLookingDown ? 1 : -1, 0));
+            block = player.getEntityWorld().getBlockState(target.pos().add(0, isLookingDown ? 1 : -1, 0));
             if (isLookingDown && blockIsTopSlab(block)) {
                 setCurrentTarget(new ReacharoundTarget(target.pos().add(0, 1, 0), target.dir(), target.hand()));
             } else if (!isLookingDown && blockIsBottomSlab(block)) {
@@ -88,7 +88,7 @@ public class PlacementFeature {
             }
         } else {
             Vec3i facing = player.getHorizontalFacing().getVector();
-            block = player.getWorld().getBlockState(getCurrentTarget().pos().add(-facing.getX(), 0, -facing.getZ()));
+            block = player.getEntityWorld().getBlockState(getCurrentTarget().pos().add(-facing.getX(), 0, -facing.getZ()));
         }
 
         return block;
@@ -97,11 +97,15 @@ public class PlacementFeature {
     public static boolean canPlace(ClientPlayerEntity player) {
         BlockState block = getPlacement(player);
         ReacharoundTarget target = getCurrentTarget();
-        return target != null && player.getWorld().canPlace(block, target.pos(), ShapeContext.absent());
+        return target != null && player.getEntityWorld().canPlace(block, target.pos(), ShapeContext.absent());
     }
 
     public static boolean executeReacharound(MinecraftClient client, Hand hand, ItemStack itemStack) {
         ReacharoundTarget target = getCurrentTarget();
+
+        if (client.player == null || client.interactionManager == null)
+            return false;
+
         if (target != null) {
             BlockHitResult blockHitResult;
 
@@ -152,7 +156,7 @@ public class PlacementFeature {
         if (hand == null)
             return;
 
-        World world = player.getWorld();
+        World world = player.getEntityWorld();
 
         Pair<Vec3d, Vec3d> params = RayTraceHandler.getEntityParams(player);
         double range = player.getBlockInteractionRange() - RANGE_ADJUSTMENT;
@@ -195,7 +199,7 @@ public class PlacementFeature {
             }
             BlockState state = world.getBlockState(pos);
 
-            double distance = pos.getY() - player.getPos().y;
+            double distance = pos.getY() - player.getEntityPos().y;
             if (isLookingDown) {
                 distance = -distance;
             }
@@ -278,7 +282,7 @@ public class PlacementFeature {
     public static ActionResult useItem(PlayerEntity player, World world, Hand hand) {
         ItemStack itemStack = player.getStackInHand(hand);
 
-        if (!world.isClient) {
+        if (!world.isClient()) {
             return ActionResult.PASS;
         }
 

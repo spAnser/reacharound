@@ -24,9 +24,11 @@
       "com.spanser.reacharound.client.integrations.ReacharoundModMenu"
     ]
   },
-  "mixins": [],
+  "mixins": [
+    "reacharound.mixins.json"
+  ],
   "depends": {
-    "fabricloader": ">=0.15.11",
+    "fabricloader": ">=0.17.3",
     "fabric-key-binding-api-v1": "*",
     "minecraft": ">=1.21-"
   },
