@@ -2,7 +2,7 @@ package com.spanser.reacharound.client.gui;
 
 import com.spanser.reacharound.client.feature.PlacementFeature;
 import com.spanser.reacharound.config.ReacharoundConfig;
-import net.fabricmc.fabric.api.client.rendering.v1.WorldRenderContext;
+import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
 import net.minecraft.client.render.debug.DebugRenderer;
@@ -58,7 +58,7 @@ public class Overlay {
     }
 
     public void render(WorldRenderContext context) {
-        if (context.matrixStack() == null || !config.render3d || !PlacementFeature.canReachAround(client)) {
+        if (context.matrices() == null || !config.render3d || !PlacementFeature.canReachAround(client)) {
             return;
         }
 
@@ -68,7 +68,7 @@ public class Overlay {
             return;
         }
 
-        Camera camera = context.camera();
+        Camera camera = context.gameRenderer().getCamera();
 
         if (config.indicator3DStyle != 1) {
             VertexConsumer vertexConsumer = context.consumers().getBuffer(RenderLayer.getDebugQuads());
@@ -83,7 +83,7 @@ public class Overlay {
 
                 PlacementFeature.ReacharoundTarget target = PlacementFeature.getCurrentTarget();
                 drawBox(
-                        context.matrixStack(),
+                        context.matrices(),
                         vertexConsumer,
                         (float) (target.pos().getX() - camera.getPos().getX()),
                         (float) (target.pos().getY() - camera.getPos().getY()),
@@ -112,7 +112,7 @@ public class Overlay {
                 float b = (colorOutline & 0xFF) / 255f;
                 PlacementFeature.ReacharoundTarget target = PlacementFeature.getCurrentTarget();
                 DebugRenderer.drawVoxelShapeOutlines(
-                        context.matrixStack(),
+                        context.matrices(),
                         vertexConsumer,
                         shape,
                         target.pos().getX() - camera.getPos().getX(),

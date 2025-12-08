@@ -20,21 +20,21 @@ public class RayTraceHandler {
         // Get the player's current rotation
         float pitch = player.getPitch();
         float yaw = player.getYaw();
-        
+
         // Calculate eye position
-        Vec3d pos = player.getPos();
+        Vec3d pos = player.getEntityPos();
         double eyeHeight = player instanceof PlayerEntity ? player.getEyeHeight(player.getPose()) : 0;
         Vec3d rayPos = new Vec3d(pos.x, pos.y + eyeHeight, pos.z);
 
         // Calculate look direction vector
         float yawRad = yaw * (float) Math.PI / 180;
         float pitchRad = pitch * (float) Math.PI / 180;
-        
+
         float horizontalFactor = -MathHelper.cos(pitchRad);
         float x = MathHelper.sin(yawRad) * horizontalFactor;
         float y = -MathHelper.sin(pitchRad);
         float z = -MathHelper.cos(yawRad) * horizontalFactor;
-        
+
         Vec3d ray = new Vec3d(x, y, z).normalize();
 
         return Pair.of(rayPos, ray);
