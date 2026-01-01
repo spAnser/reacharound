@@ -5,10 +5,9 @@ import com.spanser.reacharound.config.ReacharoundConfig;
 import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderContext;
 import net.minecraft.client.MinecraftClient;
 import net.minecraft.client.render.*;
-import net.minecraft.client.render.debug.DebugRenderer;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.util.Identifier;
 import net.minecraft.util.math.Box;
+import net.minecraft.util.math.ColorHelper;
 import net.minecraft.util.shape.VoxelShape;
 import net.minecraft.util.shape.VoxelShapes;
 
@@ -71,7 +70,7 @@ public class Overlay {
         Camera camera = context.gameRenderer().getCamera();
 
         if (config.indicator3DStyle != 1) {
-            VertexConsumer vertexConsumer = context.consumers().getBuffer(RenderLayer.getDebugQuads());
+            VertexConsumer vertexConsumer = context.consumers().getBuffer(RenderLayers.debugQuads());
 
             if (vertexConsumer != null) {
                 int colorSolid;
@@ -85,19 +84,19 @@ public class Overlay {
                 drawBox(
                         context.matrices(),
                         vertexConsumer,
-                        (float) (target.pos().getX() - camera.getPos().getX()),
-                        (float) (target.pos().getY() - camera.getPos().getY()),
-                        (float) (target.pos().getZ() - camera.getPos().getZ()),
-                        (float) (target.pos().getX() - camera.getPos().getX() + 1),
-                        (float) (target.pos().getY() - camera.getPos().getY() + 1),
-                        (float) (target.pos().getZ() - camera.getPos().getZ() + 1),
+                        (float) (target.pos().getX() - camera.getCameraPos().getX()),
+                        (float) (target.pos().getY() - camera.getCameraPos().getY()),
+                        (float) (target.pos().getZ() - camera.getCameraPos().getZ()),
+                        (float) (target.pos().getX() - camera.getCameraPos().getX() + 1),
+                        (float) (target.pos().getY() - camera.getCameraPos().getY() + 1),
+                        (float) (target.pos().getZ() - camera.getCameraPos().getZ() + 1),
                         colorSolid
                 );
             }
         }
 
         if (config.indicator3DStyle != 2) {
-            VertexConsumer vertexConsumer = context.consumers().getBuffer(RenderLayer.getLines());
+            VertexConsumer vertexConsumer = context.consumers().getBuffer(RenderLayers.lines());
 
             if (vertexConsumer != null) {
                 int colorOutline;
@@ -111,14 +110,15 @@ public class Overlay {
                 float g = ((colorOutline >> 8) & 0xFF) / 255f;
                 float b = (colorOutline & 0xFF) / 255f;
                 PlacementFeature.ReacharoundTarget target = PlacementFeature.getCurrentTarget();
-                DebugRenderer.drawVoxelShapeOutlines(
+                VertexRendering.drawOutline(
                         context.matrices(),
                         vertexConsumer,
                         shape,
-                        target.pos().getX() - camera.getPos().getX(),
-                        target.pos().getY() - camera.getPos().getY(),
-                        target.pos().getZ() - camera.getPos().getZ(),
-                        r, g, b, a, true
+                        target.pos().getX() - camera.getCameraPos().getX(),
+                        target.pos().getY() - camera.getCameraPos().getY(),
+                        target.pos().getZ() - camera.getCameraPos().getZ(),
+                        ColorHelper.fromFloats(a, r, g, b),
+                        4f
                 );
             }
         }
