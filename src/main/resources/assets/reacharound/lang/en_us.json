@@ -24,6 +24,7 @@
   "reacharound.config.indicator.style3d.both": "Both",
   "reacharound.config.indicator.style3d.outline": "Outline",
   "reacharound.config.indicator.style3d.solid": "Solid",
+  "reacharound.config.indicator.thickness3d": "Outline Thickness",
   "reacharound.config.indicator.colorOutline": "Color 3D Outline",
   "reacharound.config.indicator.colorSolid": "Color 3D Solid",
   "reacharound.config.indicator.colorOutlineObstructed": "Color 3D Outline (Obstructed)",

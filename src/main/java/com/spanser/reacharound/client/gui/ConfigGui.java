@@ -53,6 +53,7 @@ public class ConfigGui {
             case 2 -> Text.translatable("reacharound.config.indicator.style3d.solid");
             default -> Text.translatable("reacharound.config.indicator.style3d.both");
         }).setSaveConsumer((newValue) -> config.indicator3DStyle = newValue).build());
+        indicator3d.addEntry(entryBuilder.startFloatField(Text.translatable("reacharound.config.indicator.thickness3d"), config.indicator3DThickness).setMin(0f).setMax(8.0f).setDefaultValue(4f).setSaveConsumer((newValue) -> config.indicator3DThickness = newValue).build());
 
         animation.addEntry(entryBuilder.startIntField(Text.translatable("reacharound.config.animation.duration"), config.indicatorAnimationDuration).setDefaultValue(5).setSaveConsumer((newValue) -> config.indicatorAnimationDuration = newValue).build());
         animation.addEntry(entryBuilder.startSelector(Text.translatable("reacharound.config.animation.interpolation"), new Byte[]{0, 1, 2, 3}, config.indicatorAnimationInterpolation).setDefaultValue((byte) 2).setNameProvider((value) -> switch (value) {

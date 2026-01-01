@@ -27,4 +27,5 @@ public class ReacharoundConfig {
 
     public float indicatorOffsetX = 0f;
     public float indicatorOffsetY = 0f;
+    public float indicator3DThickness = 4f;
 }

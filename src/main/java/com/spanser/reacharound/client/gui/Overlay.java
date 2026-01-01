@@ -118,7 +118,7 @@ public class Overlay {
                         target.pos().getY() - camera.getCameraPos().getY(),
                         target.pos().getZ() - camera.getCameraPos().getZ(),
                         ColorHelper.fromFloats(a, r, g, b),
-                        4f
+                        config.indicator3DThickness
                 );
             }
         }
