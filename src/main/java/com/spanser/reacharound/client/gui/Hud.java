@@ -2,28 +2,30 @@ package com.spanser.reacharound.client.gui;
 
 import com.spanser.reacharound.client.feature.PlacementFeature;
 import com.spanser.reacharound.config.ReacharoundConfig;
-
-import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.gui.DrawContext;
+import net.minecraft.client.DeltaTracker;
+import net.minecraft.client.Minecraft;
+import net.minecraft.client.gui.GuiGraphicsExtractor;
 
 public class Hud {
-    private final MinecraftClient client;
+    private final Minecraft client;
     private final ReacharoundConfig config;
 
-    public Hud(MinecraftClient client, ReacharoundConfig config) {
+    public Hud(Minecraft client, ReacharoundConfig config) {
         this.client = client;
         this.config = config;
     }
 
-    public void renderPlacementAssistText(DrawContext context, float tickDelta) {
-        if (!config.render2d || !PlacementFeature.canReachAround(client)) {
+    public void extractRenderState(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
+        if (!config.render2d || client.screen != null || !PlacementFeature.canReachAround(client)) {
             return;
         }
 
-        context.getMatrices().pushMatrix();
-        context.getMatrices().translate(
-                context.getScaledWindowWidth() / 2f + config.indicatorOffsetX,
-                context.getScaledWindowHeight() / 2f - 4 + config.indicatorOffsetY
+        float tickDelta = deltaTracker.getGameTimeDeltaPartialTick(false);
+
+        graphics.pose().pushMatrix();
+        graphics.pose().translate(
+                graphics.guiWidth() / 2f + config.indicatorOffsetX,
+                graphics.guiHeight() / 2f - 4 + config.indicatorOffsetY
         );
 
         int duration = config.indicatorAnimationDuration;
@@ -48,7 +50,7 @@ public class Hud {
             case 3 -> scale *= scale * scale; // cubic
             default -> scale = 1; // none
         }
-        context.getMatrices().scale(scale, 1f);
+        graphics.pose().scale(scale, 1f);
 
         int color;
         if (PlacementFeature.canPlace(client.player)) {
@@ -62,43 +64,43 @@ public class Hud {
         color = (alpha << 24) | (color & 0x00ffffff);
 
         switch (config.indicator2DStyle) {
-            case 1 -> renderStyleQuark(context, color);
-            case 2 -> renderStyleCustom(context, color);
-            default -> renderStyleDefault(context, color);
+            case 1 -> renderStyleQuark(graphics, color);
+            case 2 -> renderStyleCustom(graphics, color);
+            default -> renderStyleDefault(graphics, color);
         }
 
-        context.getMatrices().popMatrix();
+        graphics.pose().popMatrix();
     }
 
-    public void renderStyleDefault(DrawContext context, int color) {
+    public void renderStyleDefault(GuiGraphicsExtractor graphics, int color) {
         if (PlacementFeature.isVertical()) {
-            if ((client.player != null ? client.player.getPitch() : 0) < 0) {
-                context.getMatrices().translate(0, -4);
+            if ((client.player != null ? client.player.getXRot() : 0) < 0) {
+                graphics.pose().translate(0, -4);
             } else {
-                context.getMatrices().translate(0, 4);
+                graphics.pose().translate(0, 4);
             }
         }
 
         String displayVertical = "- -";
         String displayHorizontal = "-   -";
         String text = PlacementFeature.isVertical() ? displayVertical : displayHorizontal;
-        renderText(context, color, text);
+        renderText(graphics, color, text);
     }
 
-    public void renderStyleQuark(DrawContext context, int color) {
+    public void renderStyleQuark(GuiGraphicsExtractor graphics, int color) {
         String displayVerticalQuark = "[  ]";
         String displayHorizontalQuark = "<  >";
         String text = PlacementFeature.isVertical() ? displayVerticalQuark : displayHorizontalQuark;
-        renderText(context, color, text);
+        renderText(graphics, color, text);
     }
 
-    public void renderStyleCustom(DrawContext context, int color) {
+    public void renderStyleCustom(GuiGraphicsExtractor graphics, int color) {
         String text = PlacementFeature.isVertical() ? config.indicatorVertical : config.indicatorHorizontal;
-        renderText(context, color, text);
+        renderText(graphics, color, text);
     }
 
-    public void renderText(DrawContext context, int color, String text) {
-        context.getMatrices().translate(-client.textRenderer.getWidth(text) / 2f, 0);
-        context.drawText(client.textRenderer, text, 0, 0, color, false);
+    public void renderText(GuiGraphicsExtractor graphics, int color, String text) {
+        graphics.pose().translate(-client.font.width(text) / 2f, 0);
+        graphics.text(client.font, text, 0, 0, color, false);
     }
 }

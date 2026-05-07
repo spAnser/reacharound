@@ -6,33 +6,32 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-import com.spanser.reacharound.client.feature.PlacementFeature;
-import com.spanser.reacharound.client.gui.Overlay;
-import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.keybinding.v1.KeyBindingHelper;
-import net.fabricmc.fabric.api.event.player.UseItemCallback;
-import net.minecraft.client.option.KeyBinding;
-//import net.minecraft.client.option.Category;
-import net.minecraft.client.util.InputUtil;
-import net.minecraft.util.Identifier;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.mojang.blaze3d.platform.InputConstants;
+import com.spanser.reacharound.client.feature.PlacementFeature;
 import com.spanser.reacharound.client.gui.Hud;
+import com.spanser.reacharound.client.gui.Overlay;
 import com.spanser.reacharound.config.ReacharoundConfig;
+import org.lwjgl.glfw.GLFW;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import net.fabricmc.api.ClientModInitializer;
-import net.fabricmc.fabric.api.client.rendering.v1.HudRenderCallback;
-import net.fabricmc.fabric.api.client.rendering.v1.world.WorldRenderEvents;
-import net.minecraft.client.MinecraftClient;
-import org.lwjgl.glfw.GLFW;
+import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
+import net.fabricmc.fabric.api.client.keymapping.v1.KeyMappingHelper;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.HudElementRegistry;
+import net.fabricmc.fabric.api.client.rendering.v1.hud.VanillaHudElements;
+import net.fabricmc.fabric.api.client.rendering.v1.level.LevelRenderEvents;
+import net.fabricmc.fabric.api.event.player.UseItemCallback;
+import net.minecraft.client.KeyMapping;
+import net.minecraft.client.Minecraft;
+import net.minecraft.resources.Identifier;
 
 public class Reacharound implements ClientModInitializer {
-    public static final Logger LOGGER = LogManager.getLogger();
+    public static final Logger LOGGER = LoggerFactory.getLogger("reacharound");
     private static Reacharound instance;
-    public KeyBinding keyBindingToggle;
+    public KeyMapping keyBindingToggle;
     public ReacharoundConfig config;
 
     public static Reacharound getInstance() {
@@ -45,7 +44,7 @@ public class Reacharound implements ClientModInitializer {
         loadConfig();
         instance = this;
 
-        MinecraftClient client = MinecraftClient.getInstance();
+        Minecraft client = Minecraft.getInstance();
         Hud hud = new Hud(client, this.config);
         Overlay overlay = new Overlay(client, this.config);
 
@@ -53,19 +52,19 @@ public class Reacharound implements ClientModInitializer {
 
         UseItemCallback.EVENT.register(PlacementFeature::useItem);
 
-        HudRenderCallback.EVENT.register((guiGraphics, tickCounter) -> {
-            if (client.currentScreen == null) {
-                hud.renderPlacementAssistText(guiGraphics, tickCounter.getTickProgress(false));
-            }
-        });
+        HudElementRegistry.attachElementAfter(
+                VanillaHudElements.CROSSHAIR,
+                Identifier.fromNamespaceAndPath("reacharound", "placement_indicator"),
+                hud::extractRenderState
+        );
 
-        WorldRenderEvents.BEFORE_TRANSLUCENT.register(overlay::render);
+        LevelRenderEvents.BEFORE_TRANSLUCENT_TERRAIN.register(overlay::render);
 
-        keyBindingToggle = KeyBindingHelper.registerKeyBinding(new KeyBinding(
+        keyBindingToggle = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "reacharound.keybinding.toggle",
-                InputUtil.Type.KEYSYM,
+                InputConstants.Type.KEYSYM,
                 GLFW.GLFW_KEY_UNKNOWN,
-                new KeyBinding.Category(Identifier.of("reacharound.keybinding.category"))
+                new KeyMapping.Category(Identifier.fromNamespaceAndPath("reacharound", "keybinding/category"))
         ));
 
         ClientTickEvents.END_CLIENT_TICK.register(PlacementFeature::keybindToggle);

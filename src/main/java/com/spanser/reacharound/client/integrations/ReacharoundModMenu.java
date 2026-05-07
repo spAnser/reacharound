@@ -3,11 +3,11 @@ package com.spanser.reacharound.client.integrations;
 import com.spanser.reacharound.client.gui.ConfigGui;
 import com.terraformersmc.modmenu.api.ConfigScreenFactory;
 import com.terraformersmc.modmenu.api.ModMenuApi;
-import net.minecraft.client.MinecraftClient;
+import net.minecraft.client.Minecraft;
 
 public class ReacharoundModMenu implements ModMenuApi {
     @Override
     public ConfigScreenFactory<?> getModConfigScreenFactory() {
-        return (parent) -> (new ConfigGui()).getConfigScreen(parent, MinecraftClient.getInstance().world != null);
+        return (parent) -> (new ConfigGui()).getConfigScreen(parent, Minecraft.getInstance().level != null);
     }
 }
