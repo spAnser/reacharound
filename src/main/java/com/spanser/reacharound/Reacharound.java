@@ -58,7 +58,7 @@ public class Reacharound implements ClientModInitializer {
                 hud::extractRenderState
         );
 
-        LevelRenderEvents.BEFORE_TRANSLUCENT_TERRAIN.register(overlay::render);
+        LevelRenderEvents.COLLECT_SUBMITS.register(overlay::render);
 
         keyBindingToggle = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "reacharound.keybinding.toggle",

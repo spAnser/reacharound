@@ -16,7 +16,7 @@ public class Hud {
     }
 
     public void extractRenderState(GuiGraphicsExtractor graphics, DeltaTracker deltaTracker) {
-        if (!config.render2d || client.screen != null || !PlacementFeature.canReachAround(client)) {
+        if (!config.render2d || client.gui.screen() != null || !PlacementFeature.canReachAround(client)) {
             return;
         }
 
