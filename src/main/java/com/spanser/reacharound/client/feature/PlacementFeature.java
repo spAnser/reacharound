@@ -128,9 +128,9 @@ public class PlacementFeature {
             int count = itemStack.getCount();
             InteractionResult result = client.gameMode.useItemOn(client.player, hand, blockHitResult);
             if (result.consumesAction()) {
-                client.player.swing(hand);
+                client.player.swing(hand, itemStack.getInteractAnimation(), false);
                 if (!itemStack.isEmpty() && (itemStack.getCount() != count || client.player.isCreative())) {
-                    client.gameRenderer.itemInHandRenderer.itemUsed(hand);
+                    client.player.itemUsed(hand);
                 }
 
                 return true;

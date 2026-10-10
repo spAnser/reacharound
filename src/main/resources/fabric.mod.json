@@ -27,8 +27,8 @@
   "mixins": [],
   "depends": {
     "fabricloader": ">=0.19.3",
-    "fabric-key-mapping-api-v1": "*",
-    "minecraft": "~26.2",
+    "fabric-api": "*",
+    "minecraft": "~26.3",
     "java": ">=25"
   },
   "recommends": {

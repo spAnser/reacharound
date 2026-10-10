@@ -13,7 +13,6 @@ import com.spanser.reacharound.client.feature.PlacementFeature;
 import com.spanser.reacharound.client.gui.Hud;
 import com.spanser.reacharound.client.gui.Overlay;
 import com.spanser.reacharound.config.ReacharoundConfig;
-import org.lwjgl.glfw.GLFW;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,8 +61,8 @@ public class Reacharound implements ClientModInitializer {
 
         keyBindingToggle = KeyMappingHelper.registerKeyMapping(new KeyMapping(
                 "reacharound.keybinding.toggle",
-                InputConstants.Type.KEYSYM,
-                GLFW.GLFW_KEY_UNKNOWN,
+                InputConstants.Type.KEYBOARD,
+                InputConstants.UNKNOWN.getValue(),
                 new KeyMapping.Category(Identifier.fromNamespaceAndPath("reacharound", "keybinding/category"))
         ));
 
